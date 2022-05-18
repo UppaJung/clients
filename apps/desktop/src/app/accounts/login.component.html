@@ -98,6 +98,10 @@
       <div class="sub-options">
         <button type="button" routerLink="/hint">{{ "getMasterPasswordHint" | i18n }}</button>
       </div>
+      <div class="sub-options">
+        <button type="button" 
+          (click)="requestDiceKeyDerivedMasterPassword()">{{ "DiceKey"}}</button>
+      </div>
     </div>
   </form>
 </div>

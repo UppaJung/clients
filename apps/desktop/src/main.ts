@@ -8,6 +8,7 @@ import { StateService } from "jslib-common/services/state.service";
 import { ElectronLogService } from "jslib-electron/services/electronLog.service";
 import { ElectronMainMessagingService } from "jslib-electron/services/electronMainMessaging.service";
 import { ElectronStorageService } from "jslib-electron/services/electronStorage.service";
+import { DiceKeyApiService, DiceKeysApiService } from "./electronDiceKeyApi.service"
 import { TrayMain } from "jslib-electron/tray.main";
 import { UpdaterMain } from "jslib-electron/updater.main";
 import { WindowMain } from "jslib-electron/window.main";
@@ -182,6 +183,7 @@ export class Main {
           app.setAsDefaultProtocolClient("bitwarden");
         }
 
+        console.log(`Setting up open-url`);
         // Process protocol for macOS
         app.on("open-url", (event, url) => {
           event.preventDefault();
@@ -205,9 +207,14 @@ export class Main {
 
   private processDeepLink(argv: string[]): void {
     argv
-      .filter((s) => s.indexOf("bitwarden://") === 0)
+      .filter((s) => s.indexOf("bitwarden:/") === 0)
       .forEach((s) => {
         const url = new URL(s);
+        if (DiceKeyApiService.handlePotenentialApiReponseUrl(url)) {
+          // The URL was for the DiceKey API service and does not need
+          // further processing.
+          return;
+        };
         const code = url.searchParams.get("code");
         const receivedState = url.searchParams.get("state");
         if (code != null && receivedState != null) {

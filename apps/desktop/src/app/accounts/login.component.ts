@@ -1,6 +1,8 @@
 import { Component, NgZone, OnDestroy, ViewChild, ViewContainerRef } from "@angular/core";
 import { Router } from "@angular/router";
 
+import { ipcRenderer } from "electron";
+
 import { LoginComponent as BaseLoginComponent } from "jslib-angular/components/login.component";
 import { ModalService } from "jslib-angular/services/modal.service";
 import { AuthService } from "jslib-common/abstractions/auth.service";
@@ -112,6 +114,19 @@ export class LoginComponent extends BaseLoginComponent implements OnDestroy {
     childComponent.onSaved.subscribe(() => {
       modal.close();
     });
+  }
+
+  async requestDiceKeyDerivedMasterPassword(): Promise<void> {
+    const masterPasswordOrException = await ipcRenderer.invoke("getMasterPasswordDerivedFromDiceKey");
+    console.log(`Recieved master password`, masterPasswordOrException);
+    if (typeof masterPasswordOrException === "string") {
+      // Set the master password
+      this.masterPassword = masterPasswordOrException;
+      document.getElementById("masterPassword").setAttribute("value", masterPasswordOrException);
+    } else {
+      // Error notification here if appropraite
+      // throw masterPasswordOrException;
+    }
   }
 
   onWindowHidden() {
