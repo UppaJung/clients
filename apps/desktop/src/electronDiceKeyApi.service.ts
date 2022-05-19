@@ -52,11 +52,13 @@ class DiceKeysApiServiceImplementation implements DiceKeysApiService {
     // console.log(`passwordJson`, passwordJson);
     if (typeof passwordJson !== "string") {
       promiseCallbacks.reject(new Error("response did not contain passwordJson"));
+      return false;
     }
     const parsedPasswordJson = JSON.parse(passwordJson) as {password: string};
     // console.log(`passwordJson`, parsedPasswordJson);
-    if (typeof parsedPasswordJson !== "object" || parsedPasswordJson == null || typeof (parsedPasswordJson.password) !== "string") {
+    if (parsedPasswordJson == null || typeof parsedPasswordJson !== "object" || typeof (parsedPasswordJson.password) !== "string") {
       promiseCallbacks.reject(new Error("response json did not contain a string field named 'password'"));
+      return false;
     }
     const {password} = parsedPasswordJson;
     // console.log(`password`, password);
@@ -81,7 +83,11 @@ class DiceKeysApiServiceImplementation implements DiceKeysApiService {
 
   constructor() {
     ipcMain.handle("getMasterPasswordDerivedFromDiceKey", async (event, responseChannel: string, ...args: Parameters<typeof DiceKeyApiService.getMasterPasswordDerivedFromDiceKey> ) => {
-      return await(this.getMasterPasswordDerivedFromDiceKey(...args));
+      try {
+        return await this.getMasterPasswordDerivedFromDiceKey(...args);
+      } catch (e) {
+        return e;
+      }
     });
   }
 
