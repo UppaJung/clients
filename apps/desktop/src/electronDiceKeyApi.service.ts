@@ -1,36 +1,34 @@
 import { shell, ipcMain } from "electron";
-
 export interface DiceKeysApiService {
   getMasterPasswordDerivedFromDiceKey: () => Promise<string>;
 }
 
+const clientAppsProtocol = "bitwarden:";
+const defaultRecipe = `{"allow":[{"host":"*.bitwarden.com"}]}`;
+const defaultPathName = `/--derived-secret-api--/`;
+interface RequestParameters {
+  requestId: string;
+  command?: "getPassword";
+  recipe?: string;
+  respondTo?: string;
+}
+const encodeRequestParameters = (
+  {
+    requestId,
+    command = "getPassword",
+    recipe = defaultRecipe,
+    respondTo = `${clientAppsProtocol}${defaultPathName}`,
+  }: RequestParameters
+) =>   // URL encoded the four parameters and combine them using the URL `&` notation
+  Object.entries({ command, recipe, requestId, respondTo })
+    .reduce((result, [fieldName, fieldValue]) => {
+      result.push(`${fieldName}=${encodeURIComponent(fieldValue)}`);
+      return result;
+    }, [] as string[])
+    .join("&");
+
 class DiceKeysApiServiceImplementation implements DiceKeysApiService {
   private requestIdToPromiseCallbacks = new Map<string, { resolve: (password: string) => void; reject: (error: any) => void; }>();
-
-  /**
-   * Create a URL for requesting a password derived from a DiceKey from the
-   * DiceKeys web app or thick client.
-   */
-  private createRequestUrl = ({
-    requestId, command = "getPassword", scheme = "https", host = "dicekeys.app", recipe = `{"allow":[{"host":"*.bitwarden.com"}]}`, respondTo = `bitwarden:/--derived-secret-api--/`,
-  }: {
-    requestId: string;
-    command?: "getPassword";
-    scheme?: "http" | "https";
-    host?: string;
-    recipe?: string;
-    allow?: string;
-    respondTo?: string;
-  }): string =>
-    // e.g. https://
-    `${scheme}://${host}/?${
-    // URL encoded the four parameters and combine them using the URL `&` notation
-    Object.entries({ command, recipe, requestId, respondTo })
-      .reduce((result, [fieldName, fieldValue]) => {
-        result.push(`${fieldName}=${encodeURIComponent(fieldValue)}`);
-        return result;
-      }, [] as string[])
-      .join("&")}`;
 
   public handlePotenentialApiReponseUrl = (url: URL): boolean => {
     console.log(`handleUrlResponse received URL with path`, url.pathname);
@@ -66,15 +64,20 @@ class DiceKeysApiServiceImplementation implements DiceKeysApiService {
     return true;
   }
 
-  getMasterPasswordDerivedFromDiceKey = (): Promise<string> => new Promise<string>(async (resolve, reject) => {
+  getMasterPasswordDerivedFromDiceKey = (): Promise<string> => new Promise<string>((resolve, reject) => {
     // Generate 16-character hex random request id.
     const requestId = [...Array(16)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
     try {
-      const devParameters = { scheme: "http", host: "localhost:3000" } as const;
-      const requestUrl = this.createRequestUrl({ ...devParameters, requestId });
+      // const webRequestUrl = `https://dicekeys.app?${encodeRequestParameters({requestId})}`;
+      const webRequestUrl = `http://localhost:3000?${encodeRequestParameters({requestId})}`;
+      const customSchemeRequestUrl = `dicekeys://?${encodeRequestParameters({requestId})}`;
       this.requestIdToPromiseCallbacks.set(requestId, { resolve, reject });
       // console.log(`requestUrl=${requestUrl}`);
-      await shell.openExternal(requestUrl);
+      
+      shell.openExternal(customSchemeRequestUrl).catch( () => {
+        // If couldn't open the built-in app, open via the web
+        shell.openExternal(webRequestUrl);
+      })
     } catch (e) {
       this.requestIdToPromiseCallbacks.delete(requestId);
       reject(e);
