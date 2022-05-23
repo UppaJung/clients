@@ -1,6 +1,11 @@
 import { shell, ipcMain } from "electron";
+
+export interface GetMasterPasswordDerivedFromDiceKeyResponse {
+  password: string;
+  centerLetterAndDigit?: string;
+}
 export interface DiceKeysApiService {
-  getMasterPasswordDerivedFromDiceKey: () => Promise<string>;
+  getMasterPasswordDerivedFromDiceKey: () => Promise<GetMasterPasswordDerivedFromDiceKeyResponse>;
 }
 
 const clientAppsProtocol = "bitwarden:";
@@ -28,7 +33,7 @@ const encodeRequestParameters = (
     .join("&");
 
 class DiceKeysApiServiceImplementation implements DiceKeysApiService {
-  private requestIdToPromiseCallbacks = new Map<string, { resolve: (password: string) => void; reject: (error: any) => void; }>();
+  private requestIdToPromiseCallbacks = new Map<string, { resolve: (resonse: GetMasterPasswordDerivedFromDiceKeyResponse) => void; reject: (error: any) => void; }>();
 
   public handlePotenentialApiReponseUrl = (url: URL): boolean => {
     console.log(`handleUrlResponse received URL with path`, url.pathname);
@@ -59,12 +64,18 @@ class DiceKeysApiServiceImplementation implements DiceKeysApiService {
       return false;
     }
     const {password} = parsedPasswordJson;
+    const centerLetterAndDigit = url.searchParams.get("centerLetterAndDigit");
+    console.log(`centerLetterAndDigit="${centerLetterAndDigit}"`);
+    const result = {
+      password,
+      ...(centerLetterAndDigit != null && centerLetterAndDigit.length === 2 ? {centerLetterAndDigit}:{})
+    };
     // console.log(`password`, password);
-    promiseCallbacks.resolve(password);
+    promiseCallbacks.resolve(result);
     return true;
   }
 
-  getMasterPasswordDerivedFromDiceKey = (): Promise<string> => new Promise<string>((resolve, reject) => {
+  getMasterPasswordDerivedFromDiceKey = (): Promise<GetMasterPasswordDerivedFromDiceKeyResponse> => new Promise<GetMasterPasswordDerivedFromDiceKeyResponse>((resolve, reject) => {
     // Generate 16-character hex random request id.
     const requestId = [...Array(16)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
     try {
@@ -74,10 +85,10 @@ class DiceKeysApiServiceImplementation implements DiceKeysApiService {
       this.requestIdToPromiseCallbacks.set(requestId, { resolve, reject });
       // console.log(`requestUrl=${requestUrl}`);
       
-      shell.openExternal(customSchemeRequestUrl).catch( () => {
+      //shell.openExternal(customSchemeRequestUrl).catch( () => {
         // If couldn't open the built-in app, open via the web
         shell.openExternal(webRequestUrl);
-      })
+      //})
     } catch (e) {
       this.requestIdToPromiseCallbacks.delete(requestId);
       reject(e);

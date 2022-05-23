@@ -1,5 +1,6 @@
 import { Component, NgZone, OnDestroy, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
+import { ipcRenderer } from "electron"
 
 import { RegisterComponent as BaseRegisterComponent } from "jslib-angular/components/register.component";
 import { ApiService } from "jslib-common/abstractions/api.service";
@@ -12,6 +13,7 @@ import { LogService } from "jslib-common/abstractions/log.service";
 import { PasswordGenerationService } from "jslib-common/abstractions/passwordGeneration.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { StateService } from "jslib-common/abstractions/state.service";
+import type { GetMasterPasswordDerivedFromDiceKeyResponse } from "src/electronDiceKeyApi.service";
 
 const BroadcasterSubscriptionId = "RegisterComponent";
 
@@ -46,6 +48,25 @@ export class RegisterComponent extends BaseRegisterComponent implements OnInit, 
       environmentService,
       logService
     );
+  }
+
+  async requestDiceKeyDerivedMasterPassword(): Promise<void> {
+    const masterPasswordOrException = await ipcRenderer.invoke("getMasterPasswordDerivedFromDiceKey") as GetMasterPasswordDerivedFromDiceKeyResponse;
+    console.log(`Recieved master password`, masterPasswordOrException);
+    if (typeof masterPasswordOrException.password === "string") {
+      // Set the master password
+      const {password, centerLetterAndDigit} = masterPasswordOrException;
+      console.log(`requestDiceKeyDerivedMasterPassword with centerLetterAndDigit="${centerLetterAndDigit}"`)
+      this.masterPassword = this.confirmMasterPassword = password;
+      if (centerLetterAndDigit != null) {
+        const hint = `Use the DiceKey with ${centerLetterAndDigit} at center`
+        console.log(`requestDiceKeyDerivedMasterPassword with hint="${hint}"`)
+        this.hint = hint;
+      }
+    } else {
+      // Error notification here if appropraite
+      // throw masterPasswordOrException;
+    }
   }
 
   async ngOnInit() {

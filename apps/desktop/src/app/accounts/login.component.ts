@@ -19,6 +19,8 @@ import { SyncService } from "jslib-common/abstractions/sync.service";
 
 import { EnvironmentComponent } from "./environment.component";
 
+import type { GetMasterPasswordDerivedFromDiceKeyResponse } from "../../electronDiceKeyApi.service"
+
 const BroadcasterSubscriptionId = "LoginComponent";
 
 @Component({
@@ -117,12 +119,11 @@ export class LoginComponent extends BaseLoginComponent implements OnDestroy {
   }
 
   async requestDiceKeyDerivedMasterPassword(): Promise<void> {
-    const masterPasswordOrException = await ipcRenderer.invoke("getMasterPasswordDerivedFromDiceKey");
+    const masterPasswordOrException = await ipcRenderer.invoke("getMasterPasswordDerivedFromDiceKey") as GetMasterPasswordDerivedFromDiceKeyResponse;
     console.log(`Recieved master password`, masterPasswordOrException);
-    if (typeof masterPasswordOrException === "string") {
+    if (typeof masterPasswordOrException.password === "string") {
       // Set the master password
-      this.masterPassword = masterPasswordOrException;
-      document.getElementById("masterPassword").setAttribute("value", masterPasswordOrException);
+      this.masterPassword = masterPasswordOrException.password;
     } else {
       // Error notification here if appropraite
       // throw masterPasswordOrException;

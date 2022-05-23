@@ -62,6 +62,12 @@
                   [ngClass]="{ 'bwi-eye': !showPassword, 'bwi-eye-slash': showPassword }"
                 ></i>
               </button>
+              <div class="row-btn" style="height: 1.5rem; width: 2rem; margin-right: 8px;">
+                  <img style="height: 1.5rem; width: 1.5rem;"
+                      src="./images/DiceKeysIcon.svg" alt="DiceKeys"
+                    appA11yTitle="Retreive master password from a DiceKey"
+                    (click)="requestDiceKeyDerivedMasterPassword()">                        
+              </div>
             </div>
           </div>
         </div>
@@ -97,10 +103,6 @@
       </div>
       <div class="sub-options">
         <button type="button" routerLink="/hint">{{ "getMasterPasswordHint" | i18n }}</button>
-      </div>
-      <div class="sub-options">
-        <button type="button" 
-          (click)="requestDiceKeyDerivedMasterPassword()">{{ "DiceKey"}}</button>
       </div>
     </div>
   </form>
