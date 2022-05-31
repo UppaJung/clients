@@ -55,11 +55,18 @@ export class RegisterComponent extends BaseRegisterComponent implements OnInit, 
     console.log(`Recieved master password`, masterPasswordOrException);
     if (typeof masterPasswordOrException.password === "string") {
       // Set the master password
-      const {password, centerLetterAndDigit} = masterPasswordOrException;
+      const {password, centerLetterAndDigit, sequenceNumber} = masterPasswordOrException;
       console.log(`requestDiceKeyDerivedMasterPassword with centerLetterAndDigit="${centerLetterAndDigit}"`)
       this.masterPassword = this.confirmMasterPassword = password;
-      if (centerLetterAndDigit != null) {
-        const hint = `Use the DiceKey with ${centerLetterAndDigit} at center`
+      const hints = ((centerLetterAndDigit != null) ? 1 : 0) + ((sequenceNumber != null) ? 1 : 0);
+      if (hints > 0) {
+        const hint = `Use${
+          centerLetterAndDigit == null ? "" : ` the DiceKey with ${centerLetterAndDigit}`
+        }${
+          hints > 1 ? " and" : ""
+        }${
+          sequenceNumber == null ? "" : ` sequence number ${sequenceNumber}`
+        }`
         console.log(`requestDiceKeyDerivedMasterPassword with hint="${hint}"`)
         this.hint = hint;
       }

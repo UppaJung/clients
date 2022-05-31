@@ -3,6 +3,7 @@ import { shell, ipcMain } from "electron";
 export interface GetMasterPasswordDerivedFromDiceKeyResponse {
   password: string;
   centerLetterAndDigit?: string;
+  sequenceNumber?: string;
 }
 export interface DiceKeysApiService {
   getMasterPasswordDerivedFromDiceKey: () => Promise<GetMasterPasswordDerivedFromDiceKeyResponse>;
@@ -65,10 +66,13 @@ class DiceKeysApiServiceImplementation implements DiceKeysApiService {
     }
     const {password} = parsedPasswordJson;
     const centerLetterAndDigit = url.searchParams.get("centerLetterAndDigit");
+    const sequenceNumber = url.searchParams.get("#");
     console.log(`centerLetterAndDigit="${centerLetterAndDigit}"`);
+    console.log(`sequenceNumber="${sequenceNumber}"`, url.search);
     const result = {
       password,
-      ...(centerLetterAndDigit != null && centerLetterAndDigit.length === 2 ? {centerLetterAndDigit}:{})
+      ...(centerLetterAndDigit != null && centerLetterAndDigit.length === 2 ? {centerLetterAndDigit}:{}),
+      ...(sequenceNumber != null ? {sequenceNumber}:{})
     };
     // console.log(`password`, password);
     promiseCallbacks.resolve(result);
@@ -85,10 +89,10 @@ class DiceKeysApiServiceImplementation implements DiceKeysApiService {
       this.requestIdToPromiseCallbacks.set(requestId, { resolve, reject });
       // console.log(`requestUrl=${requestUrl}`);
       
-      //shell.openExternal(customSchemeRequestUrl).catch( () => {
+      shell.openExternal(customSchemeRequestUrl).catch( () => {
         // If couldn't open the built-in app, open via the web
         shell.openExternal(webRequestUrl);
-      //})
+      })
     } catch (e) {
       this.requestIdToPromiseCallbacks.delete(requestId);
       reject(e);
