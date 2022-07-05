@@ -1,7 +1,7 @@
 import { Component, NgZone, OnDestroy, ViewChild, ViewContainerRef } from "@angular/core";
 import { Router } from "@angular/router";
-
 import { ipcRenderer } from "electron";
+
 import { LoginComponent as BaseLoginComponent } from "@bitwarden/angular/components/login.component";
 import { ModalService } from "@bitwarden/angular/services/modal.service";
 import { AuthService } from "@bitwarden/common/abstractions/auth.service";
@@ -16,9 +16,9 @@ import { PlatformUtilsService } from "@bitwarden/common/abstractions/platformUti
 import { StateService } from "@bitwarden/common/abstractions/state.service";
 import { SyncService } from "@bitwarden/common/abstractions/sync.service";
 
-import { EnvironmentComponent } from "./environment.component";
+import type { GetMasterPasswordDerivedFromDiceKeyResponse } from "../../electronDiceKeyApi.service";
 
-import type { GetMasterPasswordDerivedFromDiceKeyResponse } from "../../electronDiceKeyApi.service"
+import { EnvironmentComponent } from "./environment.component";
 
 const BroadcasterSubscriptionId = "LoginComponent";
 
@@ -71,12 +71,13 @@ export class LoginComponent extends BaseLoginComponent implements OnDestroy {
   }
 
   checkIfDiceKeysInstalled = async () => {
-    this.diceKeysAppIsInstalled = await (ipcRenderer.invoke("isDiceKeysAppInstalled") as Promise<boolean>);
-  }
+    this.diceKeysAppIsInstalled = await (ipcRenderer.invoke(
+      "isDiceKeysAppInstalled"
+    ) as Promise<boolean>);
+  };
 
   async ngOnInit() {
     await super.ngOnInit();
-    console.log(`Initializing login component`);
     this.checkIfDiceKeysInstalled();
     this.broadcasterService.subscribe(BroadcasterSubscriptionId, async (message: any) => {
       this.ngZone.run(() => {
@@ -122,7 +123,9 @@ export class LoginComponent extends BaseLoginComponent implements OnDestroy {
   }
 
   async requestDiceKeyDerivedMasterPassword(): Promise<void> {
-    const masterPasswordOrException = await ipcRenderer.invoke("getMasterPasswordDerivedFromDiceKey") as GetMasterPasswordDerivedFromDiceKeyResponse;
+    const masterPasswordOrException = (await ipcRenderer.invoke(
+      "getMasterPasswordDerivedFromDiceKey"
+    )) as GetMasterPasswordDerivedFromDiceKeyResponse;
     // console.log(`Received master password`, masterPasswordOrException);
     if (typeof masterPasswordOrException.password === "string") {
       // Set the master password
