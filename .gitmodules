@@ -1,9 +1,0 @@
-[submodule "apps/browser/jslib"]
-	path = apps/browser/jslib
-	url = https://github.com/bitwarden/jslib.git
-	branch = master
-
-[submodule "apps/desktop/jslib"]
-	path = apps/desktop/jslib
-	url = https://github.com/bitwarden/jslib.git
-	branch = master

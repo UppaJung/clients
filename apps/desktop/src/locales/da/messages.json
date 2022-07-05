@@ -126,7 +126,7 @@
     "message": "Minimér, når du kopierer til udklipsholder"
   },
   "minimizeOnCopyToClipboardDesc": {
-    "message": "Minimér, når du kopierer et elements data til udklipsholderen."
+    "message": "Minimér programmet, når du kopierer et elements data til udklipsholderen."
   },
   "toggleVisibility": {
     "message": "Slå synlighed til/fra"
@@ -370,10 +370,10 @@
     "message": "Er du sikker på, at du vil overskrive den aktuelle adgangskode?"
   },
   "overwriteUsername": {
-    "message": "Overwrite Username"
+    "message": "Overskriv brugernavn"
   },
   "overwriteUsernameConfirmation": {
-    "message": "Are you sure you want to overwrite the current username?"
+    "message": "Er du sikker på, at du vil overskrive det aktuelle brugernavn?"
   },
   "noneFolder": {
     "message": "Ingen mappe",
@@ -399,6 +399,18 @@
   },
   "length": {
     "message": "Længde"
+  },
+  "uppercase": {
+    "message": "Store bogstaver (A-Z)"
+  },
+  "lowercase": {
+    "message": "Små bogstaver (a-z)"
+  },
+  "numbers": {
+    "message": "Cifre (0-9)"
+  },
+  "specialCharacters": {
+    "message": "Specialtegn (!@#$%^&*)"
   },
   "numWords": {
     "message": "Antal ord"
@@ -821,7 +833,7 @@
     "message": "Boks timeout"
   },
   "vaultTimeoutDesc": {
-    "message": "Vælg timeout for din boks, hvorefter den vil udføre den valgte handling."
+    "message": "Vælg hvornår din boks skal udføre timeout-handlingen."
   },
   "immediately": {
     "message": "Straks"
@@ -882,11 +894,11 @@
     "message": "Fjern automatisk kopierede data fra din udklipsholder.",
     "description": "Clipboard is the operating system thing where you copy/paste data to on your device."
   },
-  "disableFavicon": {
-    "message": "Slå webikoner fra"
+  "enableFavicon": {
+    "message": "Vis webstedsikoner"
   },
-  "disableFaviconDesc": {
-    "message": "Webikoner vises som et genkendeligt billede ved siden af hvert loginelement i din boks."
+  "faviconDesc": {
+    "message": "Vis et genkendeligt billede ud for hvert login."
   },
   "enableMinToTray": {
     "message": "Minimer til bakkeikon"
@@ -901,7 +913,7 @@
     "message": "Når vinduet minimeres, vis i stedet et ikon på menulinjen."
   },
   "enableCloseToTray": {
-    "message": "Luk til ikon i meddelelsesområdet"
+    "message": "Luk ned til ikon i meddelelsesområdet"
   },
   "enableCloseToTrayDesc": {
     "message": "Når vinduet lukkes, vis i stedet et ikon i meddelelsesområdet."
@@ -973,7 +985,7 @@
     "description": "Copy to clipboard"
   },
   "checkForUpdates": {
-    "message": "Søg efter opdateringer"
+    "message": "Søg efter opdateringer…"
   },
   "version": {
     "message": "Version $VERSION_NUM$",
@@ -1198,7 +1210,7 @@
     "description": "Domain name. Ex. website.com"
   },
   "domainName": {
-    "message": "Domain Name",
+    "message": "Domænenavn",
     "description": "Domain name. Ex. website.com"
   },
   "host": {
@@ -1260,6 +1272,40 @@
   },
   "fileFormat": {
     "message": "Filformat"
+  },
+  "hCaptchaUrl": {
+    "message": "hCaptcha URL",
+    "description": "hCaptcha is the name of a website, should not be translated"
+  },
+  "loadAccessibilityCookie": {
+    "message": "Indlæs tilgængelighedscookie"
+  },
+  "registerAccessibilityUser": {
+    "message": "Registrér som tilgængelighedsbruger på",
+    "description": "ex. Register as an accessibility user at hcaptcha.com"
+  },
+  "copyPasteLink": {
+    "message": "Kopiér og indsæt linket, der er sendt til din e-mail nedenfor"
+  },
+  "enterhCaptchaUrl": {
+    "message": "Indtast URL for at indlæse tilgængelighedscookie til hCaptcha",
+    "description": "hCaptcha is the name of a website, should not be translated"
+  },
+  "hCaptchaUrlRequired": {
+    "message": "hCaptcha-URL er påkrævet",
+    "description": "hCaptcha is the name of a website, should not be translated"
+  },
+  "invalidUrl": {
+    "message": "Ugyldig URL"
+  },
+  "done": {
+    "message": "Udført"
+  },
+  "accessibilityCookieSaved": {
+    "message": "Tilgængelighedscookie gemt!"
+  },
+  "noAccessibilityCookieSaved": {
+    "message": "Ingen tilgængelighedscookie gemt"
   },
   "warning": {
     "message": "ADVARSEL",
@@ -1335,11 +1381,11 @@
   "touchIdConsentMessage": {
     "message": "lås din boks op"
   },
-  "noAutoPromptWindowsHello": {
-    "message": "Bed ikke om Windows Hello ved start."
+  "autoPromptWindowsHello": {
+    "message": "Bed om Windows Hello ved start"
   },
-  "noAutoPromptTouchId": {
-    "message": "Bed ikke om Touch ID ved start."
+  "autoPromptTouchId": {
+    "message": "Bed om Touch ID ved start"
   },
   "lockWithMasterPassOnRestart": {
     "message": "Lås med hovedadgangskode ved genstart"
@@ -1394,10 +1440,10 @@
     "message": "Boks timeout-handling"
   },
   "vaultTimeoutActionLockDesc": {
-    "message": "En låst boks kræver at du gentaster din hovedadgangskode for at tilgå den igen."
+    "message": "Hovedadgangskode eller anden oplåsningsmetode kræves for at få adgang til din boks igen."
   },
   "vaultTimeoutActionLogOutDesc": {
-    "message": "En boks der er logget ud kræver, at du godkender igen for at få adgang til den."
+    "message": "Gengodkendelse kræves for at få adgang til din boks igen."
   },
   "lock": {
     "message": "Lås",
@@ -1501,28 +1547,28 @@
     "message": "Servicevilkår og fortrolighedspolitik er ikke blevet bekræftet."
   },
   "enableBrowserIntegration": {
-    "message": "Aktiver browserintegration"
+    "message": "Tillad browserintegration"
   },
   "enableBrowserIntegrationDesc": {
     "message": "Browserintegration bruges til biometri i browseren."
   },
-  "browserIntegrationMasOnlyTitle": {
+  "browserIntegrationUnsupportedTitle": {
     "message": "Browserintegration understøttes ikke"
   },
   "browserIntegrationMasOnlyDesc": {
     "message": "Desværre understøttes browserintegration kun i Mac App Store-versionen indtil videre."
   },
-  "browserIntegrationWindowsStoreTitle": {
-    "message": "Browserintegration understøttes ikke"
-  },
   "browserIntegrationWindowsStoreDesc": {
     "message": "Desværre understøttes browserintegration i øjeblikket ikke i Windows Store-versionen."
+  },
+  "browserIntegrationLinuxDesc": {
+    "message": "Desværre understøttes browserintegration i øjeblikket ikke i linux-versionen."
   },
   "enableBrowserIntegrationFingerprint": {
     "message": "Kræv verifikation for browserintegration"
   },
   "enableBrowserIntegrationFingerprintDesc": {
-    "message": "Aktivér et ekstra sikkerhedslag ved at kræve validering af fingeraftrykssætning, når du opretter en forbindelse mellem dit skrivebord og din browser. Når det er aktiveret, kræver dette brugerintervention og verifikation hver gang en forbindelse oprettes."
+    "message": "Tilføj et ekstra sikkerhedslag ved at kræve bekræftelse af fingeraftrykssætning, når du opretter forbindelse mellem dit skrivebord og din browser. Dette kræver brugerhandling og verifikation, hver gang en forbindelse oprettes."
   },
   "approve": {
     "message": "Godkend"
@@ -1587,7 +1633,8 @@
     "description": "'Send' is a noun and the name of a feature called 'Bitwarden Send'. It should not be translated."
   },
   "maxAccessCount": {
-    "message": "Maksimalt antal tilgange"
+    "message": "Maksimalt antal tilgange",
+    "description": "This text will be displayed after a Send has been accessed the maximum amount of times."
   },
   "maxAccessCountDesc": {
     "message": "Hvis opsat, vil brugere ikke længere kunne tilgå denne Send, når det maksimale adgangsantal er nået.",
@@ -1792,8 +1839,8 @@
   "leftOrganization": {
     "message": "Du har forladt organisationen."
   },
-  "ssoKeyConnectorUnavailable": {
-    "message": "Kan ikke kontakte key connector, forsøg igen senere."
+  "ssoKeyConnectorError": {
+    "message": "Key Connector-fejl: Sørg for, at Key Connector er tilgængelig og fungerer korrekt."
   },
   "lockAllVaults": {
     "message": "Lås alle bokse"
@@ -1840,46 +1887,78 @@
       }
     }
   },
+  "locked": {
+    "message": "Låst"
+  },
+  "unlocked": {
+    "message": "Låst op"
+  },
   "generator": {
     "message": "Generator"
   },
   "whatWouldYouLikeToGenerate": {
-    "message": "What would you like to generate?"
+    "message": "Hvad vil du gerne generere?"
   },
   "passwordType": {
-    "message": "Password Type"
+    "message": "Adgangskodetype"
   },
   "regenerateUsername": {
-    "message": "Regenerate Username"
+    "message": "Regenerér brugernavn"
   },
   "generateUsername": {
-    "message": "Generate Username"
+    "message": "Generér brugernavn"
   },
   "usernameType": {
-    "message": "Username Type"
+    "message": "Brugernavnstype"
   },
   "plusAddressedEmail": {
-    "message": "Plus Addressed Email"
+    "message": "Plus adresseret e-mail",
+    "description": "Username generator option that appends a random sub-address to the username. For example: address+subaddress@email.com"
   },
   "plusAddressedEmailDesc": {
-    "message": "Use your email provider's sub-addressing capabilities."
+    "message": "Brug din e-mailudbyders underadresseringsmuligheder."
   },
   "catchallEmail": {
-    "message": "Catch-all Email"
+    "message": "Fang-alle e-mail"
   },
   "catchallEmailDesc": {
-    "message": "Use your domain's configured catch-all inbox."
+    "message": "Brug dit domænes konfigurerede fang-alle-indbakke."
   },
   "random": {
-    "message": "Random"
+    "message": "Tilfældig"
   },
   "randomWord": {
-    "message": "Random Word"
+    "message": "Tilfældigt ord"
   },
   "websiteName": {
-    "message": "Website Name"
+    "message": "Hjemmeside navn"
   },
   "service": {
-    "message": "Service"
+    "message": "Tjeneste"
+  },
+  "allVaults": {
+    "message": "Alle bokse"
+  },
+  "searchOrganization": {
+    "message": "Søg organisation"
+  },
+  "searchMyVault": {
+    "message": "Søg i min boks"
+  },
+  "forwardedEmail": {
+    "message": "Videresendt E-mail Alias"
+  },
+  "forwardedEmailDesc": {
+    "message": "Generér et e-mail alias med en ekstern viderestillingstjeneste."
+  },
+  "hostname": {
+    "message": "Værtsnavn",
+    "description": "Part of a URL."
+  },
+  "apiAccessToken": {
+    "message": "API-adgangstoken"
+  },
+  "apiKey": {
+    "message": "API-nøgle"
   }
 }

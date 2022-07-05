@@ -17,16 +17,17 @@ on:
 defaults:
   run:
     shell: bash
-    working-directory: apps/browser
 
 jobs:
   setup:
     name: Setup
     runs-on: ubuntu-20.04
     outputs:
-      release-version: ${{ steps.version.outputs.package-version }}
-      branch-name: ${{ steps.branch.outputs.branch-name }}
+      release-version: ${{ steps.version.outputs.version }}
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b  # v3.0.2
+
       - name: Branch check
         if: ${{ github.event.inputs.release_type != 'Dry Run' }}
         run: |
@@ -37,30 +38,15 @@ jobs:
             exit 1
           fi
 
-      - name: Checkout repo
-        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579
-
       - name: Check Release Version
         id: version
-        run: |
-          version=$( jq -r ".version" src/manifest.json)
-          previous_release_tag_version=$(
-            curl -sL https://api.github.com/repos/$GITHUB_REPOSITORY/releases | jq -r 'first(.[] | select(.tag_name | startswith("browser"))).tag_name'
-          )
-
-          if [ "v$version" == "$previous_release_tag_version" ] && \
-          [ "${{ github.event.inputs.release_type }}" == "Initial Release" ]; then
-            echo "[!] Already released v$version. Please bump version to continue"
-            exit 1
-          fi
-
-          echo "::set-output name=package-version::$version"
-
-      - name: Get branch name
-        id: branch
-        run: |
-          BRANCH_NAME=$(basename ${{ github.ref }})
-          echo "::set-output name=branch-name::$BRANCH_NAME"
+        uses: bitwarden/gh-actions/release-version-check@ea9fab01d76940267b4147cc1c4542431246b9f6
+        with:
+          release-type: ${{ github.event.inputs.release_type }}
+          project-type: ts
+          file: apps/browser/src/manifest.json
+          monorepo: true
+          monorepo-project: browser
 
 
   locales-test:
@@ -73,27 +59,28 @@ jobs:
 
       - name: Testing locales - extName length
         run: |
-         found_error=false
+          found_error=false
 
-         echo "Locales Test"
-         echo "============"
-         echo "extName string must be 40 characters or less"
-         echo
-         for locale in $(ls src/_locales/); do
-           string_length=$(jq '.extName.message | length' src/_locales/$locale/messages.json)
-           if [[ $string_length -gt 40 ]]; then
-             echo "$locale: $string_length"
-             found_error=true
-           fi
-         done
+          echo "Locales Test"
+          echo "============"
+          echo "extName string must be 40 characters or less"
+          echo
+          for locale in $(ls src/_locales/); do
+            string_length=$(jq '.extName.message | length' src/_locales/$locale/messages.json)
+            if [[ $string_length -gt 40 ]]; then
+              echo "$locale: $string_length"
+              found_error=true
+            fi
+          done
 
-         if $found_error; then
-           echo
-           echo "Please fix 'extName' for the locales listed above."
-           exit 1
-         else
-           echo "Test passed!"
-         fi
+          if $found_error; then
+            echo
+            echo "Please fix 'extName' for the locales listed above."
+            exit 1
+          else
+            echo "Test passed!"
+          fi
+        working-directory: apps/browser
 
 
   release:
@@ -103,12 +90,26 @@ jobs:
       - setup
       - locales-test
     steps:
-      - name: Download latest RC build artifacts
+      - name: Download latest Release build artifacts
+        if: ${{ github.event.inputs.release_type != 'Dry Run' }}
         uses: bitwarden/gh-actions/download-artifacts@c1fa8e09871a860862d6bbe36184b06d2c7e35a8
         with:
           workflow: build-browser.yml
           workflow_conclusion: success
-          branch: ${{ needs.setup.outputs.branch-name }}
+          branch: ${{ github.ref_name }}
+          artifacts: 'browser-source-*.zip,
+                      dist-chrome-*.zip,
+                      dist-opera-*.zip,
+                      dist-firefox-*.zip,
+                      dist-edge-*.zip'
+
+      - name: Download latest master build artifacts
+        if: ${{ github.event.inputs.release_type == 'Dry Run' }}
+        uses: bitwarden/gh-actions/download-artifacts@c1fa8e09871a860862d6bbe36184b06d2c7e35a8
+        with:
+          workflow: build-browser.yml
+          workflow_conclusion: success
+          branch: master
           artifacts: 'browser-source-*.zip,
                       dist-chrome-*.zip,
                       dist-opera-*.zip,
@@ -136,7 +137,7 @@ jobs:
                       dist-edge-${{ needs.setup.outputs.release-version }}.zip'
           commit: ${{ github.sha }}
           tag: "browser-v${{ needs.setup.outputs.release-version }}"
-          name: "Version ${{ needs.setup.outputs.release-version }}"
+          name: "Browser v${{ needs.setup.outputs.release-version }}"
           body: "<insert release notes here>"
           token: ${{ secrets.GITHUB_TOKEN }}
           draft: true

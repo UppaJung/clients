@@ -6,9 +6,9 @@ module.exports = {
   collectCoverage: true,
   coverageReporters: ["html", "lcov"],
   coverageDirectory: "coverage",
+  setupFilesAfterEnv: ["<rootDir>/test.setup.ts"],
   preset: "jest-preset-angular",
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions?.paths || {}, {
     prefix: "<rootDir>/",
   }),
-  modulePathIgnorePatterns: ["jslib"],
 };

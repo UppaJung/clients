@@ -3,16 +3,16 @@ import { FormControl } from "@angular/forms";
 import { Router } from "@angular/router";
 import Swal from "sweetalert2";
 
-import { ModalService } from "jslib-angular/services/modal.service";
-import { CryptoService } from "jslib-common/abstractions/crypto.service";
-import { EnvironmentService } from "jslib-common/abstractions/environment.service";
-import { I18nService } from "jslib-common/abstractions/i18n.service";
-import { KeyConnectorService } from "jslib-common/abstractions/keyConnector.service";
-import { MessagingService } from "jslib-common/abstractions/messaging.service";
-import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
-import { StateService } from "jslib-common/abstractions/state.service";
-import { VaultTimeoutService } from "jslib-common/abstractions/vaultTimeout.service";
-import { DeviceType } from "jslib-common/enums/deviceType";
+import { ModalService } from "@bitwarden/angular/services/modal.service";
+import { CryptoService } from "@bitwarden/common/abstractions/crypto.service";
+import { EnvironmentService } from "@bitwarden/common/abstractions/environment.service";
+import { I18nService } from "@bitwarden/common/abstractions/i18n.service";
+import { KeyConnectorService } from "@bitwarden/common/abstractions/keyConnector.service";
+import { MessagingService } from "@bitwarden/common/abstractions/messaging.service";
+import { PlatformUtilsService } from "@bitwarden/common/abstractions/platformUtils.service";
+import { StateService } from "@bitwarden/common/abstractions/state.service";
+import { VaultTimeoutService } from "@bitwarden/common/abstractions/vaultTimeout.service";
+import { DeviceType } from "@bitwarden/common/enums/deviceType";
 
 import { BrowserApi } from "../../browser/browserApi";
 import { BiometricErrors, BiometricErrorTypes } from "../../models/biometricErrors";
@@ -46,7 +46,7 @@ export class SettingsComponent implements OnInit {
   pin: boolean = null;
   supportsBiometric: boolean;
   biometric = false;
-  disableAutoBiometricsPrompt = true;
+  enableAutoBiometricsPrompt = true;
   previousVaultTimeout: number = null;
   showChangeMasterPass = true;
 
@@ -114,8 +114,9 @@ export class SettingsComponent implements OnInit {
 
     this.supportsBiometric = await this.platformUtilsService.supportsBiometric();
     this.biometric = await this.vaultTimeoutService.isBiometricLockSet();
-    this.disableAutoBiometricsPrompt =
+    const disableAutoBiometricsPrompt =
       (await this.stateService.getDisableAutoBiometricsPrompt()) ?? true;
+    this.enableAutoBiometricsPrompt = !disableAutoBiometricsPrompt;
     this.showChangeMasterPass = !(await this.keyConnectorService.getUsesKeyConnector());
   }
 
@@ -134,8 +135,14 @@ export class SettingsComponent implements OnInit {
       }
     }
 
-    if (!this.vaultTimeout.valid) {
-      this.platformUtilsService.showToast("error", null, this.i18nService.t("vaultTimeoutToLarge"));
+    // The minTimeoutError does not apply to browser because it supports Immediately
+    // So only check for the policyError
+    if (this.vaultTimeout.hasError("policyError")) {
+      this.platformUtilsService.showToast(
+        "error",
+        null,
+        this.i18nService.t("vaultTimeoutTooLarge")
+      );
       return;
     }
 
@@ -170,8 +177,12 @@ export class SettingsComponent implements OnInit {
       }
     }
 
-    if (!this.vaultTimeout.valid) {
-      this.platformUtilsService.showToast("error", null, this.i18nService.t("vaultTimeoutToLarge"));
+    if (this.vaultTimeout.hasError("policyError")) {
+      this.platformUtilsService.showToast(
+        "error",
+        null,
+        this.i18nService.t("vaultTimeoutTooLarge")
+      );
       return;
     }
 
@@ -289,7 +300,7 @@ export class SettingsComponent implements OnInit {
   }
 
   async updateAutoBiometricsPrompt() {
-    await this.stateService.setDisableAutoBiometricsPrompt(this.disableAutoBiometricsPrompt);
+    await this.stateService.setDisableAutoBiometricsPrompt(!this.enableAutoBiometricsPrompt);
   }
 
   async lock() {
