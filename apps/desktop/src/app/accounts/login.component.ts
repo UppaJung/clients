@@ -32,6 +32,7 @@ export class LoginComponent extends BaseLoginComponent implements OnDestroy {
   environmentModal: ViewContainerRef;
 
   showingModal = false;
+  diceKeysAppIsInstalled = false;
 
   protected alwaysRememberEmail = true;
 
@@ -70,8 +71,14 @@ export class LoginComponent extends BaseLoginComponent implements OnDestroy {
     };
   }
 
+  checkIfDiceKeysInstalled = async () => {
+    this.diceKeysAppIsInstalled = await (ipcRenderer.invoke("isDiceKeysAppInstalled") as Promise<boolean>);
+  }
+
   async ngOnInit() {
     await super.ngOnInit();
+    console.log(`Initializing login component`);
+    this.checkIfDiceKeysInstalled();
     this.broadcasterService.subscribe(BroadcasterSubscriptionId, async (message: any) => {
       this.ngZone.run(() => {
         switch (message.command) {
@@ -79,6 +86,7 @@ export class LoginComponent extends BaseLoginComponent implements OnDestroy {
             this.onWindowHidden();
             break;
           case "windowIsFocused":
+            this.checkIfDiceKeysInstalled();
             if (this.deferFocus === null) {
               this.deferFocus = !message.windowIsFocused;
               if (!this.deferFocus) {
@@ -120,12 +128,12 @@ export class LoginComponent extends BaseLoginComponent implements OnDestroy {
 
   async requestDiceKeyDerivedMasterPassword(): Promise<void> {
     const masterPasswordOrException = await ipcRenderer.invoke("getMasterPasswordDerivedFromDiceKey") as GetMasterPasswordDerivedFromDiceKeyResponse;
-    console.log(`Recieved master password`, masterPasswordOrException);
+    // console.log(`Received master password`, masterPasswordOrException);
     if (typeof masterPasswordOrException.password === "string") {
       // Set the master password
       this.masterPassword = masterPasswordOrException.password;
     } else {
-      // Error notification here if appropraite
+      // Error notification here if appropriate
       // throw masterPasswordOrException;
     }
   }

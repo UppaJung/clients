@@ -52,7 +52,7 @@ export class RegisterComponent extends BaseRegisterComponent implements OnInit, 
 
   async requestDiceKeyDerivedMasterPassword(): Promise<void> {
     const masterPasswordOrException = await ipcRenderer.invoke("getMasterPasswordDerivedFromDiceKey") as GetMasterPasswordDerivedFromDiceKeyResponse;
-    console.log(`Recieved master password`, masterPasswordOrException);
+    console.log(`Received master password`, masterPasswordOrException);
     if (typeof masterPasswordOrException.password === "string") {
       // Set the master password
       const {password, centerLetterAndDigit, sequenceNumber} = masterPasswordOrException;

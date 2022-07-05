@@ -1,12 +1,50 @@
 import { shell, ipcMain } from "electron";
+import { spawn } from "child_process";
 
 export interface GetMasterPasswordDerivedFromDiceKeyResponse {
   password: string;
   centerLetterAndDigit?: string;
+ 
   sequenceNumber?: string;
 }
+const shellTest = (testOutput: (stdOutString: string) => boolean, ...spawnArgs: Parameters<typeof spawn>): Promise<boolean> => new Promise<boolean>((resolve) => {
+  var resolved = false;
+  const resolveOnce = (result: boolean, debugStr?: string) => {
+    if (!resolved) {
+      resolved = true;
+      resolve(result);
+    }
+  }
+  let child = spawn(...spawnArgs);
+  child.stdout.on("data", (data) => {
+    const dataAsStr: string | undefined = typeof data === "string" ? data : data instanceof Buffer ? data.toString() : undefined;
+    if (dataAsStr != null && testOutput(dataAsStr)) {
+      resolveOnce(true, dataAsStr);
+    }
+  });
+    // return false if not true within 10ms of exit
+  child.on("exit", () => setTimeout(() => resolveOnce(false), 10));
+});
+
+const isDiceKeysAppInstalledMac = () => shellTest(
+    (result) => result.indexOf("DiceKeys.app") != -1,
+    "mdfind",
+    [
+      `kMDItemCFBundleIdentifier == com.dicekeys.app`,
+    ], {}
+  );
+
+const isDiceKeysAppInstalledWindows= () => shellTest(
+    (result) => result.indexOf("FIXME") != -1,
+    "reg", [
+      "query",
+      `"fixme"`,
+    ], {}
+  );
+
 export interface DiceKeysApiService {
   getMasterPasswordDerivedFromDiceKey: () => Promise<GetMasterPasswordDerivedFromDiceKeyResponse>;
+  isDiceKeysAppInstalled: () => Promise<boolean>;
 }
 
 const clientAppsProtocol = "bitwarden:";
@@ -34,9 +72,9 @@ const encodeRequestParameters = (
     .join("&");
 
 class DiceKeysApiServiceImplementation implements DiceKeysApiService {
-  private requestIdToPromiseCallbacks = new Map<string, { resolve: (resonse: GetMasterPasswordDerivedFromDiceKeyResponse) => void; reject: (error: any) => void; }>();
+  private requestIdToPromiseCallbacks = new Map<string, { resolve: (response: GetMasterPasswordDerivedFromDiceKeyResponse) => void; reject: (error: any) => void; }>();
 
-  public handlePotenentialApiReponseUrl = (url: URL): boolean => {
+  public handlePotentialApiResponseUrl = (url: URL): boolean => {
     console.log(`handleUrlResponse received URL with path`, url.pathname);
     if (url.pathname != `/--derived-secret-api--/`) {
       return false;
@@ -79,12 +117,22 @@ class DiceKeysApiServiceImplementation implements DiceKeysApiService {
     return true;
   }
 
+  isDiceKeysAppInstalled = (): Promise<boolean> =>
+    process.platform === "darwin" ?
+      isDiceKeysAppInstalledMac() :
+    process.platform === "win32" ?
+      isDiceKeysAppInstalledWindows() :
+    // Unknown OS.  Just return false.
+    new Promise<boolean>( (resolve) => resolve(false) );
+
+
   getMasterPasswordDerivedFromDiceKey = (): Promise<GetMasterPasswordDerivedFromDiceKeyResponse> => new Promise<GetMasterPasswordDerivedFromDiceKeyResponse>((resolve, reject) => {
     // Generate 16-character hex random request id.
     const requestId = [...Array(16)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
     try {
       // const webRequestUrl = `https://dicekeys.app?${encodeRequestParameters({requestId})}`;
-      const webRequestUrl = `http://localhost:3000?${encodeRequestParameters({requestId})}`;
+      const webRequestUrl = `https://staging.dicekeys.app?${encodeRequestParameters({requestId})}`;
+      // const webRequestUrl = `http://localhost:3000?${encodeRequestParameters({requestId})}`;
       const customSchemeRequestUrl = `dicekeys://?${encodeRequestParameters({requestId})}`;
       this.requestIdToPromiseCallbacks.set(requestId, { resolve, reject });
       // console.log(`requestUrl=${requestUrl}`);
@@ -100,6 +148,13 @@ class DiceKeysApiServiceImplementation implements DiceKeysApiService {
   });
 
   constructor() {
+    ipcMain.handle("isDiceKeysAppInstalled", async (event, responseChannel: string, ...args: Parameters<typeof DiceKeyApiService.getMasterPasswordDerivedFromDiceKey> ) => {
+      try {
+        return await this.isDiceKeysAppInstalled(...args);
+      } catch (e) {
+        return e;
+      }
+    });
     ipcMain.handle("getMasterPasswordDerivedFromDiceKey", async (event, responseChannel: string, ...args: Parameters<typeof DiceKeyApiService.getMasterPasswordDerivedFromDiceKey> ) => {
       try {
         return await this.getMasterPasswordDerivedFromDiceKey(...args);

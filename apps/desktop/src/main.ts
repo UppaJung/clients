@@ -210,7 +210,7 @@ export class Main {
       .filter((s) => s.indexOf("bitwarden:/") === 0)
       .forEach((s) => {
         const url = new URL(s);
-        if (DiceKeyApiService.handlePotenentialApiReponseUrl(url)) {
+        if (DiceKeyApiService.handlePotentialApiResponseUrl(url)) {
           // The URL was for the DiceKey API service and does not need
           // further processing.
           return;

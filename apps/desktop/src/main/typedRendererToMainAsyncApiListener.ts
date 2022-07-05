@@ -24,19 +24,19 @@ const implementAsyncRendererToElectronIpcServerFn =
     });
 }
 
-const getPasswordFromDiceKey = async () => {
-    await shell.openExternal(`https://dicekeys.app/`);
-    return "I tried to open the link!";
-};
+// const getPasswordFromDiceKey = async () => {
+//     await shell.openExternal(`https://dicekeys.app/`);
+//     return "I tried to open the link!";
+// };
 
-export class TypedRendererToMainAsyncApiListener {
-    constructor() {}
+// export class TypedRendererToMainAsyncApiListener {
+//     constructor() {}
 
-    init() {
-        implementAsyncRendererToElectronIpcServerFn<IPC_RENDERER_TO_ELECTRON>({
-            getPasswordFromDiceKey
-        })
-    }
+//     init() {
+//         implementAsyncRendererToElectronIpcServerFn<IPC_RENDERER_TO_ELECTRON>({
+//             getPasswordFromDiceKey
+//         })
+//     }
 
-  }
+//   }
   
