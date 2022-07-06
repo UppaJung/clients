@@ -1,4 +1,5 @@
 import { Component, NgZone, OnDestroy, OnInit } from "@angular/core";
+import { FormBuilder } from "@angular/forms";
 import { Router } from "@angular/router";
 import { ipcRenderer } from "electron"
 
@@ -9,6 +10,7 @@ import { AuthService } from "@bitwarden/common/abstractions/auth.service";
 import { BroadcasterService } from "@bitwarden/common/abstractions/broadcaster.service";
 import { CryptoService } from "@bitwarden/common/abstractions/crypto.service";
 import { EnvironmentService } from "@bitwarden/common/abstractions/environment.service";
+import { FormValidationErrorsService } from "@bitwarden/common/abstractions/formValidationErrors.service";
 import { I18nService } from "@bitwarden/common/abstractions/i18n.service";
 import { LogService } from "@bitwarden/common/abstractions/log.service";
 import { PasswordGenerationService } from "@bitwarden/common/abstractions/passwordGeneration.service";
@@ -23,6 +25,8 @@ const BroadcasterSubscriptionId = "RegisterComponent";
 })
 export class RegisterComponent extends BaseRegisterComponent implements OnInit, OnDestroy {
   constructor(
+    formValidationErrorService: FormValidationErrorsService,
+    formBuilder: FormBuilder,
     authService: AuthService,
     router: Router,
     i18nService: I18nService,
@@ -37,6 +41,8 @@ export class RegisterComponent extends BaseRegisterComponent implements OnInit, 
     logService: LogService
   ) {
     super(
+      formValidationErrorService,
+      formBuilder,
       authService,
       router,
       i18nService,
