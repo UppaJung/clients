@@ -1,9 +1,8 @@
 import { Component, NgZone, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder } from "@angular/forms";
 import { Router } from "@angular/router";
-import { ipcRenderer } from "electron"
+import { ipcRenderer } from "electron";
 
-import type { GetMasterPasswordDerivedFromDiceKeyResponse } from "src/electronDiceKeyApi.service";
 import { RegisterComponent as BaseRegisterComponent } from "@bitwarden/angular/components/register.component";
 import { ApiService } from "@bitwarden/common/abstractions/api.service";
 import { AuthService } from "@bitwarden/common/abstractions/auth.service";
@@ -16,6 +15,8 @@ import { LogService } from "@bitwarden/common/abstractions/log.service";
 import { PasswordGenerationService } from "@bitwarden/common/abstractions/passwordGeneration.service";
 import { PlatformUtilsService } from "@bitwarden/common/abstractions/platformUtils.service";
 import { StateService } from "@bitwarden/common/abstractions/state.service";
+
+import type { GetMasterPasswordDerivedFromDiceKeyResponse } from "src/electronDiceKeyApi.service";
 
 const BroadcasterSubscriptionId = "RegisterComponent";
 
@@ -57,27 +58,37 @@ export class RegisterComponent extends BaseRegisterComponent implements OnInit, 
   }
 
   async requestDiceKeyDerivedMasterPassword(): Promise<void> {
-    const masterPasswordOrException = await ipcRenderer.invoke("getMasterPasswordDerivedFromDiceKey") as GetMasterPasswordDerivedFromDiceKeyResponse;
-    console.log(`Received master password`, masterPasswordOrException);
+    // console.log(`getMasterPasswordDerivedFromDiceKey`);
+    const masterPasswordOrException = (await ipcRenderer.invoke(
+      "getMasterPasswordDerivedFromDiceKey"
+    )) as GetMasterPasswordDerivedFromDiceKeyResponse;
+    // console.log(`Received master password`, masterPasswordOrException);
     if (typeof masterPasswordOrException.password === "string") {
       // Set the master password
-      const {password, centerLetterAndDigit, sequenceNumber} = masterPasswordOrException;
-      console.log(`requestDiceKeyDerivedMasterPassword with centerLetterAndDigit="${centerLetterAndDigit}"`)
-      this.masterPassword = this.confirmMasterPassword = password;
-      const hints = ((centerLetterAndDigit != null) ? 1 : 0) + ((sequenceNumber != null) ? 1 : 0);
-      if (hints > 0) {
-        const hint = `Use${
-          centerLetterAndDigit == null ? "" : ` the DiceKey with ${centerLetterAndDigit}`
-        }${
-          hints > 1 ? " and" : ""
-        }${
-          sequenceNumber == null ? "" : ` sequence number ${sequenceNumber}`
-        }`
-        console.log(`requestDiceKeyDerivedMasterPassword with hint="${hint}"`)
-        this.hint = hint;
-      }
+      const { password, centerLetterAndDigit, sequenceNumber } = masterPasswordOrException;
+      // console.log(
+      //   `requestDiceKeyDerivedMasterPassword with centerLetterAndDigit="${centerLetterAndDigit}"`
+      // );
+      const hints = (centerLetterAndDigit != null ? 1 : 0) + (sequenceNumber != null ? 1 : 0);
+      const formValuesToUpdate = {
+        masterPassword: password,
+        confirmMasterPassword: password,
+        ...(hints === 0
+          ? {}
+          : {
+              hint: `Use${
+                centerLetterAndDigit == null
+                  ? ""
+                  : ` the DiceKey with ${centerLetterAndDigit} in center`
+              }${hints > 1 ? " and" : ""}${
+                sequenceNumber == null ? "" : ` sequence # ${sequenceNumber}`
+              }`,
+            }),
+      };
+      // console.log(`this.formGroup.formValuesToUpdate`, formValuesToUpdate);
+      this.formGroup.patchValue(formValuesToUpdate);
     } else {
-      // Error notification here if appropraite
+      // Error notification here if appropriate
       // throw masterPasswordOrException;
     }
   }

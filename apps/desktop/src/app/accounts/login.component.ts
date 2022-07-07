@@ -109,7 +109,7 @@ export class LoginComponent extends BaseLoginComponent implements OnDestroy {
   }
 
   async settings() {
-    const [modal, childComponent] = await this.modalService.openViewRef(
+    const [modal] = await this.modalService.openViewRef(
       EnvironmentComponent,
       this.environmentModal
     );

@@ -2,7 +2,6 @@ import * as path from "path";
 
 import { app } from "electron";
 
-import { DiceKeyApiService, DiceKeysApiService } from "./electronDiceKeyApi.service"
 import { StateFactory } from "@bitwarden/common/factories/stateFactory";
 import { GlobalState } from "@bitwarden/common/models/domain/globalState";
 import { MemoryStorageService } from "@bitwarden/common/services/memoryStorage.service";
@@ -14,6 +13,7 @@ import { TrayMain } from "@bitwarden/electron/tray.main";
 import { UpdaterMain } from "@bitwarden/electron/updater.main";
 import { WindowMain } from "@bitwarden/electron/window.main";
 
+import { DiceKeyApiService } from "./electronDiceKeyApi.service";
 import { BiometricMain } from "./main/biometric/biometric.main";
 import { DesktopCredentialStorageListener } from "./main/desktopCredentialStorageListener";
 import { MenuMain } from "./main/menu/menu.main";
@@ -178,7 +178,7 @@ export class Main {
 
         app.removeAsDefaultProtocolClient("bitwarden");
         if (process.env.NODE_ENV === "development" && process.platform === "win32") {
-          // Fix development build on Windows requirering a different protocol client
+          // Fix development build on Windows requiring a different protocol client
           app.setAsDefaultProtocolClient("bitwarden", process.execPath, [
             process.argv[1],
             path.resolve(process.argv[2]),
@@ -187,7 +187,6 @@ export class Main {
           app.setAsDefaultProtocolClient("bitwarden");
         }
 
-        console.log(`Setting up open-url`);
         // Process protocol for macOS
         app.on("open-url", (event, url) => {
           event.preventDefault();
@@ -218,7 +217,7 @@ export class Main {
           // The URL was for the DiceKey API service and does not need
           // further processing.
           return;
-        };
+        }
         const code = url.searchParams.get("code");
         const receivedState = url.searchParams.get("state");
         if (code != null && receivedState != null) {
