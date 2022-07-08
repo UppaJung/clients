@@ -148,7 +148,7 @@ class DiceKeysApiServiceImplementation implements DiceKeysApiService {
         .join("");
       try {
         // const webRequestUrl = `https://dicekeys.app?${encodeRequestParameters({requestId})}`;
-        const webRequestUrl = `https://staging.dicekeys.app?${encodeRequestParameters({
+        const webRequestUrl = `https://dicekeys.app?${encodeRequestParameters({
           requestId,
         })}`;
         // const webRequestUrl = `http://localhost:3000?${encodeRequestParameters({requestId})}`;
