@@ -49,9 +49,18 @@
                   [ngClass]="{ 'bwi-eye': !showPassword, 'bwi-eye-slash': showPassword }"
                 ></i>
               </button>
-              <div class="row-btn" style="height: 1.5rem; width: 2rem; margin-right: 8px">
+              <div
+                class="row-btn"
+                style="
+                  height: 100%;
+                  display: flex;
+                  flex-grow: 1;
+                  flex-direction: column;
+                  justify-content: center;
+                "
+              >
                 <img
-                  style="height: 1.5rem; width: 1.5rem"
+                  style="height: 1.6rem; width: 1.6rem; margin-bottom: 0px"
                   src="./images/DiceKeysIcon.svg"
                   alt="DiceKeys"
                   appA11yTitle="Retrieve master password from a DiceKey"
