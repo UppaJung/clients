@@ -22,6 +22,27 @@ import { EnvironmentComponent } from "./environment.component";
 
 const BroadcasterSubscriptionId = "LoginComponent";
 
+const isGetMasterPasswordDerivedFromDiceKeyResponse = (
+  candidate: unknown
+): candidate is GetMasterPasswordDerivedFromDiceKeyResponse =>
+  candidate != null &&
+  typeof candidate === "object" &&
+  typeof (candidate as GetMasterPasswordDerivedFromDiceKeyResponse).password === "string";
+
+export const invokeGetMasterPasswordDerivedFromDiceKey = async () => {
+  const result = (await ipcRenderer.invoke("getMasterPasswordDerivedFromDiceKey")) as unknown;
+  // Validate that the response is not an exception by ensuring it has the
+  // right format for a valid response.
+  if (isGetMasterPasswordDerivedFromDiceKeyResponse(result)) {
+    return result;
+  } else {
+    throw result;
+  }
+};
+
+export const invokeIsDiceKeysAppInstalled = () =>
+  ipcRenderer.invoke("isDiceKeysAppInstalled") as Promise<boolean>;
+
 @Component({
   selector: "app-login",
   templateUrl: "login.component.html",
@@ -31,7 +52,6 @@ export class LoginComponent extends BaseLoginComponent implements OnDestroy {
   environmentModal: ViewContainerRef;
 
   showingModal = false;
-  diceKeysAppIsInstalled = false;
 
   protected alwaysRememberEmail = true;
 
@@ -70,10 +90,9 @@ export class LoginComponent extends BaseLoginComponent implements OnDestroy {
     };
   }
 
+  diceKeysAppIsInstalled = false;
   checkIfDiceKeysInstalled = async () => {
-    this.diceKeysAppIsInstalled = await (ipcRenderer.invoke(
-      "isDiceKeysAppInstalled"
-    ) as Promise<boolean>);
+    this.diceKeysAppIsInstalled = await invokeIsDiceKeysAppInstalled();
   };
 
   async ngOnInit() {
@@ -123,16 +142,12 @@ export class LoginComponent extends BaseLoginComponent implements OnDestroy {
   }
 
   async requestDiceKeyDerivedMasterPassword(): Promise<void> {
-    const masterPasswordOrException = (await ipcRenderer.invoke(
-      "getMasterPasswordDerivedFromDiceKey"
-    )) as GetMasterPasswordDerivedFromDiceKeyResponse;
-    // console.log(`Received master password`, masterPasswordOrException);
-    if (typeof masterPasswordOrException.password === "string") {
+    try {
+      const { password } = await invokeGetMasterPasswordDerivedFromDiceKey();
       // Set the master password
-      this.masterPassword = masterPasswordOrException.password;
-    } else {
-      // Error notification here if appropriate
-      // throw masterPasswordOrException;
+      this.masterPassword = password;
+    } catch {
+      /**/
     }
   }
 

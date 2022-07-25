@@ -1,7 +1,6 @@
 import { Component, NgZone, OnDestroy, OnInit } from "@angular/core";
 import { FormBuilder } from "@angular/forms";
 import { Router } from "@angular/router";
-import { ipcRenderer } from "electron";
 
 import { RegisterComponent as BaseRegisterComponent } from "@bitwarden/angular/components/register.component";
 import { ApiService } from "@bitwarden/common/abstractions/api.service";
@@ -16,7 +15,10 @@ import { PasswordGenerationService } from "@bitwarden/common/abstractions/passwo
 import { PlatformUtilsService } from "@bitwarden/common/abstractions/platformUtils.service";
 import { StateService } from "@bitwarden/common/abstractions/state.service";
 
-import type { GetMasterPasswordDerivedFromDiceKeyResponse } from "src/electronDiceKeyApi.service";
+import {
+  invokeGetMasterPasswordDerivedFromDiceKey,
+  invokeIsDiceKeysAppInstalled,
+} from "./login.component";
 
 const BroadcasterSubscriptionId = "RegisterComponent";
 
@@ -58,47 +60,43 @@ export class RegisterComponent extends BaseRegisterComponent implements OnInit, 
   }
 
   async requestDiceKeyDerivedMasterPassword(): Promise<void> {
-    // console.log(`getMasterPasswordDerivedFromDiceKey`);
-    const masterPasswordOrException = (await ipcRenderer.invoke(
-      "getMasterPasswordDerivedFromDiceKey"
-    )) as GetMasterPasswordDerivedFromDiceKeyResponse;
-    // console.log(`Received master password`, masterPasswordOrException);
-    if (typeof masterPasswordOrException.password === "string") {
-      // Set the master password
-      const { password, centerLetterAndDigit, sequenceNumber } = masterPasswordOrException;
-      // console.log(
-      //   `requestDiceKeyDerivedMasterPassword with centerLetterAndDigit="${centerLetterAndDigit}"`
-      // );
-      const hints = (centerLetterAndDigit != null ? 1 : 0) + (sequenceNumber != null ? 1 : 0);
+    try {
+      const { password, centerLetterAndDigit, sequenceNumber } =
+        await invokeGetMasterPasswordDerivedFromDiceKey();
+      const hintStrings: string[] = [
+        ...(centerLetterAndDigit == null
+          ? []
+          : [`the DiceKey with ${centerLetterAndDigit} in center`]),
+        ...(sequenceNumber == null ? [] : [`sequence # ${sequenceNumber}`]),
+      ];
+      const hint: { hint: string } | Record<string, never> =
+        hintStrings.length === 0 ? {} : { hint: `Use ${hintStrings.join(" and ")}.` };
       const formValuesToUpdate = {
         masterPassword: password,
         confirmMasterPassword: password,
-        ...(hints === 0
-          ? {}
-          : {
-              hint: `Use${
-                centerLetterAndDigit == null
-                  ? ""
-                  : ` the DiceKey with ${centerLetterAndDigit} in center`
-              }${hints > 1 ? " and" : ""}${
-                sequenceNumber == null ? "" : ` sequence # ${sequenceNumber}`
-              }`,
-            }),
+        ...hint,
       };
-      // console.log(`this.formGroup.formValuesToUpdate`, formValuesToUpdate);
       this.formGroup.patchValue(formValuesToUpdate);
-    } else {
+    } catch {
       // Error notification here if appropriate
-      // throw masterPasswordOrException;
     }
   }
 
+  diceKeysAppIsInstalled = false;
+  checkIfDiceKeysInstalled = async () => {
+    this.diceKeysAppIsInstalled = await invokeIsDiceKeysAppInstalled();
+  };
+
   async ngOnInit() {
+    this.checkIfDiceKeysInstalled();
     this.broadcasterService.subscribe(BroadcasterSubscriptionId, async (message: any) => {
       this.ngZone.run(() => {
         switch (message.command) {
           case "windowHidden":
             this.onWindowHidden();
+            break;
+          case "windowIsFocused":
+            this.checkIfDiceKeysInstalled();
             break;
           default:
         }
