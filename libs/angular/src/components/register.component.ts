@@ -1,11 +1,8 @@
-import { Directive, OnInit } from "@angular/core";
-import { FormBuilder, Validators } from "@angular/forms";
+import { Directive, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { AbstractControl, FormBuilder, ValidatorFn, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
 
-import {
-  validateInputsDoesntMatch,
-  validateInputsMatch,
-} from "@bitwarden/angular/validators/fieldsInputCheck.validator";
+import { InputsFieldMatch } from "@bitwarden/angular/validators/inputsFieldMatch.validator";
 import { ApiService } from "@bitwarden/common/abstractions/api.service";
 import { AuthService } from "@bitwarden/common/abstractions/auth.service";
 import { CryptoService } from "@bitwarden/common/abstractions/crypto.service";
@@ -20,6 +17,7 @@ import { PasswordGenerationService } from "@bitwarden/common/abstractions/passwo
 import { PlatformUtilsService } from "@bitwarden/common/abstractions/platformUtils.service";
 import { StateService } from "@bitwarden/common/abstractions/state.service";
 import { DEFAULT_KDF_ITERATIONS, DEFAULT_KDF_TYPE } from "@bitwarden/common/enums/kdfType";
+import { PasswordLogInCredentials } from "@bitwarden/common/models/domain/logInCredentials";
 import { KeysRequest } from "@bitwarden/common/models/request/keysRequest";
 import { ReferenceEventRequest } from "@bitwarden/common/models/request/referenceEventRequest";
 import { RegisterRequest } from "@bitwarden/common/models/request/registerRequest";
@@ -28,6 +26,9 @@ import { CaptchaProtectedComponent } from "./captchaProtected.component";
 
 @Directive()
 export class RegisterComponent extends CaptchaProtectedComponent implements OnInit {
+  @Input() isInTrialFlow = false;
+  @Output() createdAccount = new EventEmitter<string>();
+
   showPassword = false;
   formPromise: Promise<any>;
   masterPasswordScore: number;
@@ -35,24 +36,31 @@ export class RegisterComponent extends CaptchaProtectedComponent implements OnIn
   showTerms = true;
   showErrorSummary = false;
 
-  formGroup = this.formBuilder.group({
-    email: ["", [Validators.required, Validators.email]],
-    name: [""],
-    masterPassword: ["", [Validators.required, Validators.minLength(8)]],
-    confirmMasterPassword: [
-      "",
-      [
-        Validators.required,
-        Validators.minLength(8),
-        validateInputsMatch("masterPassword", this.i18nService.t("masterPassDoesntMatch")),
+  formGroup = this.formBuilder.group(
+    {
+      email: ["", [Validators.required, Validators.email]],
+      name: [""],
+      masterPassword: ["", [Validators.required, Validators.minLength(8)]],
+      confirmMasterPassword: ["", [Validators.required, Validators.minLength(8)]],
+      hint: [
+        null,
+        [
+          InputsFieldMatch.validateInputsDoesntMatch(
+            "masterPassword",
+            this.i18nService.t("hintEqualsPassword")
+          ),
+        ],
       ],
-    ],
-    hint: [
-      null,
-      [validateInputsDoesntMatch("masterPassword", this.i18nService.t("hintEqualsPassword"))],
-    ],
-    acceptPolicies: [false, [Validators.requiredTrue]],
-  });
+      acceptPolicies: [false, [this.acceptPoliciesValidation()]],
+    },
+    {
+      validator: InputsFieldMatch.validateFormInputsMatch(
+        "masterPassword",
+        "confirmMasterPassword",
+        this.i18nService.t("masterPassDoesntMatch")
+      ),
+    }
+  );
 
   protected successRoute = "login";
   private masterPasswordStrengthTimeout: any;
@@ -193,8 +201,31 @@ export class RegisterComponent extends CaptchaProtectedComponent implements OnIn
           throw e;
         }
       }
-      this.platformUtilsService.showToast("success", null, this.i18nService.t("newAccountCreated"));
-      this.router.navigate([this.successRoute], { queryParams: { email: email } });
+
+      if (this.isInTrialFlow) {
+        this.platformUtilsService.showToast(
+          "success",
+          null,
+          this.i18nService.t("trialAccountCreated")
+        );
+        //login user here
+        const credentials = new PasswordLogInCredentials(
+          email,
+          masterPassword,
+          this.captchaToken,
+          null
+        );
+        await this.authService.logIn(credentials);
+
+        this.createdAccount.emit(this.formGroup.get("email")?.value);
+      } else {
+        this.platformUtilsService.showToast(
+          "success",
+          null,
+          this.i18nService.t("newAccountCreated")
+        );
+        this.router.navigate([this.successRoute], { queryParams: { email: email } });
+      }
     } catch (e) {
       this.logService.error(e);
     }
@@ -263,5 +294,14 @@ export class RegisterComponent extends CaptchaProtectedComponent implements OnIn
   private errorTag(error: AllValidationErrors): string {
     const name = error.errorName.charAt(0).toUpperCase() + error.errorName.slice(1);
     return `${error.controlName}${name}`;
+  }
+
+  //validation would be ignored on selfhosted
+  private acceptPoliciesValidation(): ValidatorFn {
+    return (control: AbstractControl) => {
+      const ctrlValue = control.value;
+
+      return !ctrlValue && this.showTerms ? { required: true } : null;
+    };
   }
 }

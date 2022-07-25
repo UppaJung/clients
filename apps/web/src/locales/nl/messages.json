@@ -572,6 +572,9 @@
   "createAccount": {
     "message": "Account aanmaken"
   },
+  "startTrial": {
+    "message": "Start proefperiode"
+  },
   "logIn": {
     "message": "Inloggen"
   },
@@ -592,6 +595,9 @@
   },
   "masterPassDesc": {
     "message": "Het hoofdwachtwoord is het wachtwoord waarmee je toegang krijgt tot je beveiligde kluis. Het is belangrijk dat je het hoofdwachtwoord niet vergeet, want er is geen manier om het te herstellen."
+  },
+  "masterPassImportant": {
+    "message": "Hoofdwachtwoorden kun je niet herstellen als je ze vergeet!"
   },
   "masterPassHintDesc": {
     "message": "Een hoofdwachtwoordhint kan je helpen je wachtwoord te herinneren als je het vergeten bent."
@@ -623,17 +629,23 @@
   "invalidEmail": {
     "message": "Ongeldig e-mailadres."
   },
-  "masterPassRequired": {
-    "message": "Hoofdwachtwoord is vereist."
+  "masterPasswordRequired": {
+    "message": "Hoofdwachtwoord vereist."
   },
-  "masterPassLength": {
-    "message": "Het hoofdwachtwoord moet minimaal 8 tekens lang zijn."
+  "confirmMasterPasswordRequired": {
+    "message": "Type je hoofdwachtwoord opnieuw in."
+  },
+  "masterPasswordMinLength": {
+    "message": "Hoofdwachtwoord moet minimaal 8 tekens lang zijn."
   },
   "masterPassDoesntMatch": {
     "message": "De hoofdwachtwoorden komen niet overeen."
   },
   "newAccountCreated": {
     "message": "Je nieuwe account is aangemaakt! Je kunt nu inloggen."
+  },
+  "trialAccountCreated": {
+    "message": "Account succesvol aangemaakt."
   },
   "masterPassSent": {
     "message": "We hebben je een e-mail gestuurd met je hoofdwachtwoordhint."
@@ -1238,8 +1250,8 @@
   "enabled": {
     "message": "Ingeschakeld"
   },
-  "activate": {
-    "message": "Activeren"
+  "restoreAccess": {
+    "message": "Restore Access"
   },
   "premium": {
     "message": "Premium",
@@ -1266,8 +1278,8 @@
   "disable": {
     "message": "Uitschakelen"
   },
-  "deactivate": {
-    "message": "Deactiveren"
+  "revokeAccess": {
+    "message": "Revoke Access"
   },
   "twoStepLoginProviderEnabled": {
     "message": "Deze tweestapsaanmeldingsaanbieder is geactiveerd voor je account."
@@ -1660,6 +1672,12 @@
   "billing": {
     "message": "Facturering"
   },
+  "billingPlanLabel": {
+    "message": "Facturatie"
+  },
+  "paymentType": {
+    "message": "Betalingswijze"
+  },
   "accountCredit": {
     "message": "Rekeningtegoed",
     "description": "Financial term. In the case of Bitwarden, a positive balance means that you owe money, while a negative balance means that you have a credit (Bitwarden owes you money)."
@@ -1776,6 +1794,9 @@
   "year": {
     "message": "jaar"
   },
+  "yr": {
+    "message": "j"
+  },
   "month": {
     "message": "maand"
   },
@@ -1803,6 +1824,9 @@
   },
   "billingInformation": {
     "message": "Factureringsgegevens"
+  },
+  "billingTrialSubLabel": {
+    "message": "Het bedrag wordt niet in rekening gebracht tijdens de gratis proefperiode van 7 dagen."
   },
   "creditCard": {
     "message": "Creditcard"
@@ -2160,10 +2184,34 @@
       }
     }
   },
+  "trialThankYou": {
+    "message": "Bedankt voor het aanmelden voor Bitwarden voor $PLAN$!",
+    "placeholders": {
+      "plan": {
+        "content": "$1",
+        "example": "Teams"
+      }
+    }
+  },
+  "trialPaidInfoMessage": {
+    "message": "Je gratis proefperiode van 7 dagen $PLAN$ wordt na 7 dagen omgezet naar een betaald abonnement.",
+    "placeholders": {
+      "plan": {
+        "content": "$1",
+        "example": "Teams"
+      }
+    }
+  },
+  "trialConfirmationEmail": {
+    "message": "We hebben een bevestigingsmail gestuurd naar het factuuradres van je team op "
+  },
   "monthly": {
     "message": "Maandelijks"
   },
   "annually": {
+    "message": "Jaarlijks"
+  },
+  "annual": {
     "message": "Jaarlijks"
   },
   "basePrice": {
@@ -2232,11 +2280,11 @@
   "removeUserConfirmation": {
     "message": "Weet je zeker dat je deze gebruiker wilt verwijderen?"
   },
-  "deactivateUserConfirmation": {
-    "message": "Dit lid heeft geen toegang meer tot de organisatie, maar heeft nog wel toegang tot de individuele kluis."
+  "removeOrgUserConfirmation": {
+    "message": "When a member is removed, they no longer have access to organization data and this action is irreversible. To add the member back to the organization, they must be invited and onboarded again."
   },
-  "activateUserConfirmation": {
-    "message": "Weet je zeker dat je deze gebruiker wilt activeren en toegang tot de organisatie geven?"
+  "revokeUserConfirmation": {
+    "message": "When a member is revoked, they no longer have access to organization data. To quickly restore member access, go to the Revoked tab."
   },
   "removeUserConfirmationKeyConnector": {
     "message": "Waarschuwing! Deze gebruiker vereist de Key Connector om de versleuteling te beheren. Als je deze gebruiker uit je organisatie verwijdert, wordt zijn account permanent uitgeschakeld. Deze actie kan niet ongedaan worden gemaakt. Wil je doorgaan?"
@@ -2583,8 +2631,8 @@
       }
     }
   },
-  "deactivatedUserId": {
-    "message": "Gebruiker $ID$ gedeactiveerd.",
+  "removeUserIdAccess": {
+    "message": "Remove $ID$ access",
     "placeholders": {
       "id": {
         "content": "$1",
@@ -2592,8 +2640,8 @@
       }
     }
   },
-  "activatedUserId": {
-    "message": "Gebruiker $ID$ geactiveerd.",
+  "revokedUserId": {
+    "message": "Revoked organization access for $ID$.",
     "placeholders": {
       "id": {
         "content": "$1",
@@ -2601,8 +2649,8 @@
       }
     }
   },
-  "deactivateUserId": {
-    "message": "Gebruiker $ID$ deactiveren?",
+  "restoredUserId": {
+    "message": "Restored organization access for $ID$.",
     "placeholders": {
       "id": {
         "content": "$1",
@@ -2610,8 +2658,8 @@
       }
     }
   },
-  "activateUserId": {
-    "message": "Gebruiker $ID$ activeren?",
+  "revokeUserId": {
+    "message": "Revoke $ID$ access",
     "placeholders": {
       "id": {
         "content": "$1",
@@ -3159,8 +3207,8 @@
   "acceptPolicies": {
     "message": "Door dit vakje aan te vinken ga je akkoord met het volgende:"
   },
-  "acceptPoliciesError": {
-    "message": "Algemene voorwaarden en privacybeleid zijn nog niet erkend."
+  "acceptPoliciesRequired": {
+    "message": "Je hebt de algemene voorwaarden en het privacybeleid nog niet erkend."
   },
   "termsOfService": {
     "message": "Algemene gebruiksvoorwaarden"
@@ -3208,6 +3256,9 @@
   },
   "organizationIsDisabled": {
     "message": "Organisatie uitgeschakeld."
+  },
+  "disabledOrganizationFilterError": {
+    "message": "Je kunt uitgeschakelde items in een organisatie niet benaderen. Neem contact op met de eigenaar van je organisatie voor hulp."
   },
   "licenseIsExpired": {
     "message": "Licentie verlopen."
@@ -3333,8 +3384,14 @@
   "clone": {
     "message": "Dupliceren"
   },
+  "masterPassPolicyTitle": {
+    "message": "Vereisten hoofdwachtwoord"
+  },
   "masterPassPolicyDesc": {
     "message": "Minimale eisen voor de sterkte van het hoofdwachtwoord instellen."
+  },
+  "twoStepLoginPolicyTitle": {
+    "message": "Tweestapsaanmelding vereisen"
   },
   "twoStepLoginPolicyDesc": {
     "message": "Vereis tweestapsaanmelding op het persoonlijke account van gebruikers."
@@ -3346,7 +3403,7 @@
     "message": "Je bent lid van een organisatie die tweestapsaanmelding vereist op je persoonlijke account. Als je tweestapsaanmelding uitschakelt wordt je automatisch uit deze organisaties verwijderd."
   },
   "passwordGeneratorPolicyDesc": {
-    "message": "Stel minimale vereisten in voor de configuratie van de wachtwoordgenerator."
+    "message": "Stel minimale vereisten in voor de configuratie van het wachtwoord generator."
   },
   "passwordGeneratorPolicyInEffect": {
     "message": "Een of meer organisatiebeleidseisen heeft invloed op de instellingen van je generator."
@@ -3666,8 +3723,8 @@
   "disabled": {
     "message": "Uitgeschakeld"
   },
-  "deactivated": {
-    "message": "Gedeactiveerd"
+  "revoked": {
+    "message": "Revoked"
   },
   "sendLink": {
     "message": "Send-koppeling",
@@ -4270,11 +4327,11 @@
   "removeUsersWarning": {
     "message": "Weet je zeker dat je de volgende gebruikers wilt verwijderen? Dit proces duurt enkele seconden en kan niet worden onderbroken of geannuleerd."
   },
-  "deactivateUsersWarning": {
-    "message": "Weet je zeker dat je de volgende leden wilt deactiveren? Ze hebben dan geen toegang meer tot de organisatie. Dit process neemt een paar seconden in beslag en je kunt het niet onderbreken of annuleren."
+  "removeOrgUsersConfirmation": {
+    "message": "When member(s) are removed, they no longer have access to organization data and this action is irreversible. To add the member back to the organization, they must be invited and onboarded again. The process may take a few seconds to complete and cannot be interrupted or canceled."
   },
-  "activateUsersWarning": {
-    "message": "Weet je zeker dat je de volgende leden wilt activeren en ze toegang geven tot de organisatie? Dit process neemt een paar seconden in beslag en je kunt het niet onderbreken of annuleren."
+  "revokeUsersWarning": {
+    "message": "When member(s) are revoked, they no longer have access to organization data. To quickly restore member access, go to the Revoked tab. The process may take a few seconds to complete and cannot be interrupted or canceled."
   },
   "theme": {
     "message": "Thema"
@@ -4306,11 +4363,11 @@
   "bulkRemovedMessage": {
     "message": "Succesvol verwijderd"
   },
-  "bulkDeactivatedMessage": {
-    "message": "Succesvol gedeactiveerd"
+  "bulkRevokedMessage": {
+    "message": "Revoked organization access successfully"
   },
-  "bulkActivatedMessage": {
-    "message": "Succesvol geactiveerd"
+  "bulkRestoredMessage": {
+    "message": "Restored organization access successfully"
   },
   "bulkFilteredMessage": {
     "message": "Uitgezonderd, niet van toepassing voor deze actie."
@@ -4321,11 +4378,11 @@
   "removeUsers": {
     "message": "Gebruikers verwijderen"
   },
-  "deactivateUsers": {
-    "message": "Gebruikers deactiveren"
+  "revokeUsers": {
+    "message": "Revoke Users"
   },
-  "activateUsers": {
-    "message": "Gebruikers activeren"
+  "restoreUsers": {
+    "message": "Restore Users"
   },
   "error": {
     "message": "Fout"
@@ -4737,9 +4794,6 @@
   "sponsorshipCreated": {
     "message": "Sponsoring aangemaakt"
   },
-  "revoke": {
-    "message": "Intrekken"
-  },
   "emailSent": {
     "message": "E-mail verzonden"
   },
@@ -4802,15 +4856,15 @@
   },
   "ssoPolicyHelpStart": {
     "message": "Inschakelen",
-    "description": "This will be used as part of a larger sentence, broken up to include links. The full sentence will read 'Enable the SSO Authentication policy to require all members to log in with SSO.'"
+    "description": "This will be used as part of a larger sentence, broken up to include links. The full sentence will read 'Use the require single-sign-on authentication policy to require all members to log in with SSO.'"
   },
   "ssoPolicyHelpLink": {
     "message": "SSO-beleid",
-    "description": "This will be used as part of a larger sentence, broken up to include links. The full sentence will read 'Enable the SSO Authentication policy to require all members to log in with SSO.'"
+    "description": "This will be used as part of a larger sentence, broken up to include links. The full sentence will read 'Use the require single-sign-on authentication policy to require all members to log in with SSO.'"
   },
   "ssoPolicyHelpEnd": {
     "message": "om alle leden inloggen met SSO te verplichten.",
-    "description": "This will be used as part of a larger sentence, broken up to include links. The full sentence will read 'Enable the SSO Authentication policy to require all members to log in with SSO.'"
+    "description": "This will be used as part of a larger sentence, broken up to include links. The full sentence will read 'Use the require single-sign-on authentication policy to require all members to log in with SSO.'"
   },
   "ssoPolicyHelpKeyConnector": {
     "message": "SSO-authenticatie en Enkele Organisatie-beleid zijn vereist voor het instellen van de versleuteling van de Key Connector."
@@ -5165,5 +5219,92 @@
         "example": "My Email"
       }
     }
+  },
+  "scim": {
+    "message": "SCIM-provisioning",
+    "description": "The text, 'SCIM', is an acronymn and should not be translated."
+  },
+  "scimDescription": {
+    "message": "Automatisch in gebruikers en groepen voorzien via SCIM-provisioning van je voorkeursprovider",
+    "description": "the text, 'SCIM', is an acronymn and should not be translated."
+  },
+  "scimEnabledCheckboxDesc": {
+    "message": "SCIM inschakelen",
+    "description": "the text, 'SCIM', is an acronymn and should not be translated."
+  },
+  "scimEnabledCheckboxDescHelpText": {
+    "message": "Stel je voorkeurs voorkeursprovider voor identiteiten in door de URL SCIM API-sleutel te configureren",
+    "description": "the text, 'SCIM', is an acronymn and should not be translated."
+  },
+  "scimApiKeyHelperText": {
+    "message": "Deze API-sleutel heeft toegang tot het beheer van gebruikers binnen je organisatie. Het moet geheim blijven."
+  },
+  "copyScimKey": {
+    "message": "Kopieer de SCIM API-sleutel naar je klembord",
+    "description": "the text, 'SCIM' and 'API', are acronymns and should not be translated."
+  },
+  "rotateScimKey": {
+    "message": "De SCIM API-sleutel roteren",
+    "description": "the text, 'SCIM' and 'API', are acronymns and should not be translated."
+  },
+  "rotateScimKeyWarning": {
+    "message": "Weet je zeker dat je de SCIM API-sleutel wilt roteren? De huidige sleutel werkt niet meer voor bestaande integraties.",
+    "description": "the text, 'SCIM' and 'API', are acronymns and should not be translated."
+  },
+  "rotateKey": {
+    "message": "Sleutel roteren"
+  },
+  "scimApiKey": {
+    "message": "SCIM API-sleutel",
+    "description": "the text, 'SCIM' and 'API', are acronymns and should not be translated."
+  },
+  "copyScimUrl": {
+    "message": "Kopieer de URL van het SCIM-eindpunt naar je klembord",
+    "description": "the text, 'SCIM' and 'URL', are acronymns and should not be translated."
+  },
+  "scimUrl": {
+    "message": "SCIM-URL",
+    "description": "the text, 'SCIM' and 'URL', are acronymns and should not be translated."
+  },
+  "scimApiKeyRotated": {
+    "message": "De SCIM API-sleutel is met succes veranderd",
+    "description": "the text, 'SCIM' and 'API', are acronymns and should not be translated."
+  },
+  "scimSettingsSaved": {
+    "message": "SCIM-instellingen opgeslagen",
+    "description": "the text, 'SCIM', is an acronymn and should not be translated."
+  },
+  "inputRequired": {
+    "message": "Invoer vereist."
+  },
+  "inputEmail": {
+    "message": "Invoer is geen e-mailadres."
+  },
+  "inputMinLength": {
+    "message": "Invoer moet minimaal $COUNT$ tekens lang zijn.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "8"
+      }
+    }
+  },
+  "fieldsNeedAttention": {
+    "message": "$COUNT$ veld(en) hierboven hebben je aandacht nodig.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "4"
+      }
+    }
+  },
+  "turnOn": {
+    "message": "Inschakelen"
+  },
+  "on": {
+    "message": "Aan"
+  },
+  "cardBrandMir": {
+    "message": "Mir"
   }
 }

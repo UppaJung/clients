@@ -13,8 +13,13 @@
   },
   "afterSign": "scripts/after-sign.js",
   "asarUnpack": ["**/*.node"],
-  "files": ["**/*", "!**/node_modules/@bitwarden/desktop-native/**/*"],
-  "electronVersion": "16.2.7",
+  "files": [
+    "**/*",
+    "!**/node_modules/@bitwarden/desktop-native/**/*",
+    "**/node_modules/@bitwarden/desktop-native/index.js",
+    "**/node_modules/@bitwarden/desktop-native/desktop_native.${platform}-${arch}*.node"
+  ],
+  "electronVersion": "19.0.8",
   "generateUpdatesFilesForAllChannels": true,
   "publish": {
     "provider": "generic",
@@ -69,7 +74,7 @@
     "sign": "./sign.js",
     "extraResources": [
       {
-        "from": "node_modules/regedit/vbs",
+        "from": "../../node_modules/regedit/vbs",
         "to": "regedit/vbs",
         "filter": ["**/*"]
       },

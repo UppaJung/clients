@@ -4,6 +4,7 @@ import { EnvironmentService } from "../abstractions/environment.service";
 import { PlatformUtilsService } from "../abstractions/platformUtils.service";
 import { TokenService } from "../abstractions/token.service";
 import { DeviceType } from "../enums/deviceType";
+import { OrganizationApiKeyType } from "../enums/organizationApiKeyType";
 import { OrganizationConnectionType } from "../enums/organizationConnectionType";
 import { PolicyType } from "../enums/policyType";
 import { Utils } from "../misc/utils";
@@ -30,7 +31,6 @@ import { EmergencyAccessInviteRequest } from "../models/request/emergencyAccessI
 import { EmergencyAccessPasswordRequest } from "../models/request/emergencyAccessPasswordRequest";
 import { EmergencyAccessUpdateRequest } from "../models/request/emergencyAccessUpdateRequest";
 import { EventRequest } from "../models/request/eventRequest";
-import { FolderRequest } from "../models/request/folderRequest";
 import { GroupRequest } from "../models/request/groupRequest";
 import { IapCheckRequest } from "../models/request/iapCheckRequest";
 import { ApiTokenRequest } from "../models/request/identityToken/apiTokenRequest";
@@ -126,7 +126,6 @@ import {
 } from "../models/response/emergencyAccessResponse";
 import { ErrorResponse } from "../models/response/errorResponse";
 import { EventResponse } from "../models/response/eventResponse";
-import { FolderResponse } from "../models/response/folderResponse";
 import { GroupDetailsResponse, GroupResponse } from "../models/response/groupResponse";
 import { IdentityCaptchaResponse } from "../models/response/identityCaptchaResponse";
 import { IdentityTokenResponse } from "../models/response/identityTokenResponse";
@@ -140,6 +139,7 @@ import {
   OrganizationConnectionConfigApis,
   OrganizationConnectionResponse,
 } from "../models/response/organizationConnectionResponse";
+import { OrganizationExportResponse } from "../models/response/organizationExportResponse";
 import { OrganizationKeysResponse } from "../models/response/organizationKeysResponse";
 import { OrganizationResponse } from "../models/response/organizationResponse";
 import { OrganizationSponsorshipSyncStatusResponse } from "../models/response/organizationSponsorshipSyncStatusResponse";
@@ -487,27 +487,6 @@ export class ApiService implements ApiServiceAbstraction {
     return new BillingPaymentResponse(r);
   }
 
-  // Folder APIs
-
-  async getFolder(id: string): Promise<FolderResponse> {
-    const r = await this.send("GET", "/folders/" + id, null, true, true);
-    return new FolderResponse(r);
-  }
-
-  async postFolder(request: FolderRequest): Promise<FolderResponse> {
-    const r = await this.send("POST", "/folders", request, true, true);
-    return new FolderResponse(r);
-  }
-
-  async putFolder(id: string, request: FolderRequest): Promise<FolderResponse> {
-    const r = await this.send("PUT", "/folders/" + id, request, true, true);
-    return new FolderResponse(r);
-  }
-
-  deleteFolder(id: string): Promise<any> {
-    return this.send("DELETE", "/folders/" + id, null, true, false);
-  }
-
   // Send APIs
 
   async getSend(id: string): Promise<SendResponse> {
@@ -609,6 +588,11 @@ export class ApiService implements ApiServiceAbstraction {
 
   async getCipher(id: string): Promise<CipherResponse> {
     const r = await this.send("GET", "/ciphers/" + id, null, true, true);
+    return new CipherResponse(r);
+  }
+
+  async getFullCipherDetails(id: string): Promise<CipherResponse> {
+    const r = await this.send("GET", "/ciphers/" + id + "/details", null, true, true);
     return new CipherResponse(r);
   }
 
@@ -1361,23 +1345,23 @@ export class ApiService implements ApiServiceAbstraction {
     return new ListResponse(r, OrganizationUserBulkResponse);
   }
 
-  deactivateOrganizationUser(organizationId: string, id: string): Promise<any> {
+  revokeOrganizationUser(organizationId: string, id: string): Promise<any> {
     return this.send(
       "PUT",
-      "/organizations/" + organizationId + "/users/" + id + "/deactivate",
+      "/organizations/" + organizationId + "/users/" + id + "/revoke",
       null,
       true,
       false
     );
   }
 
-  async deactivateManyOrganizationUsers(
+  async revokeManyOrganizationUsers(
     organizationId: string,
     request: OrganizationUserBulkRequest
   ): Promise<ListResponse<OrganizationUserBulkResponse>> {
     const r = await this.send(
       "PUT",
-      "/organizations/" + organizationId + "/users/deactivate",
+      "/organizations/" + organizationId + "/users/revoke",
       request,
       true,
       true
@@ -1385,23 +1369,23 @@ export class ApiService implements ApiServiceAbstraction {
     return new ListResponse(r, OrganizationUserBulkResponse);
   }
 
-  activateOrganizationUser(organizationId: string, id: string): Promise<any> {
+  restoreOrganizationUser(organizationId: string, id: string): Promise<any> {
     return this.send(
       "PUT",
-      "/organizations/" + organizationId + "/users/" + id + "/activate",
+      "/organizations/" + organizationId + "/users/" + id + "/restore",
       null,
       true,
       false
     );
   }
 
-  async activateManyOrganizationUsers(
+  async restoreManyOrganizationUsers(
     organizationId: string,
     request: OrganizationUserBulkRequest
   ): Promise<ListResponse<OrganizationUserBulkResponse>> {
     const r = await this.send(
       "PUT",
-      "/organizations/" + organizationId + "/users/activate",
+      "/organizations/" + organizationId + "/users/restore",
       request,
       true,
       true
@@ -1412,7 +1396,7 @@ export class ApiService implements ApiServiceAbstraction {
   // Plan APIs
 
   async getPlans(): Promise<ListResponse<PlanResponse>> {
-    const r = await this.send("GET", "/plans/", null, true, true);
+    const r = await this.send("GET", "/plans/", null, false, true);
     return new ListResponse(r, PlanResponse);
   }
 
@@ -1840,15 +1824,14 @@ export class ApiService implements ApiServiceAbstraction {
   }
 
   async getOrganizationApiKeyInformation(
-    id: string
+    id: string,
+    type: OrganizationApiKeyType = null
   ): Promise<ListResponse<OrganizationApiKeyInformationResponse>> {
-    const r = await this.send(
-      "GET",
-      "/organizations/" + id + "/api-key-information",
-      null,
-      true,
-      true
-    );
+    const uri =
+      type === null
+        ? "/organizations/" + id + "/api-key-information"
+        : "/organizations/" + id + "/api-key-information/" + type;
+    const r = await this.send("GET", uri, null, true, true);
     return new ListResponse(r, OrganizationApiKeyInformationResponse);
   }
 
@@ -2341,6 +2324,17 @@ export class ApiService implements ApiServiceAbstraction {
     }
   }
 
+  async getOrganizationExport(organizationId: string): Promise<OrganizationExportResponse> {
+    const r = await this.send(
+      "GET",
+      "/organizations/" + organizationId + "/export",
+      null,
+      true,
+      true
+    );
+    return new OrganizationExportResponse(r);
+  }
+
   // Helpers
 
   async getActiveBearerToken(): Promise<string> {
@@ -2566,7 +2560,7 @@ export class ApiService implements ApiServiceAbstraction {
     await this.tokenService.setToken(response.accessToken);
   }
 
-  private async send(
+  async send(
     method: "GET" | "POST" | "PUT" | "DELETE",
     path: string,
     body: any,

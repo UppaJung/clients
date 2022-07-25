@@ -532,11 +532,14 @@
   "invalidEmail": {
     "message": "Ugyldig e-mailadresse."
   },
-  "masterPassRequired": {
+  "masterPasswordRequired": {
     "message": "Hovedadgangskode er påkrævet."
   },
-  "masterPassLength": {
-    "message": "Hovedadgangskoden skal være på mindst 8 tegn."
+  "confirmMasterPasswordRequired": {
+    "message": "Hovedadgangskode kræves angivet igen."
+  },
+  "masterPasswordMinlength": {
+    "message": "Hovedadgangskode skal være mindst 8 tegn."
   },
   "masterPassDoesntMatch": {
     "message": "De to adgangskoder matcher ikke."
@@ -1543,14 +1546,14 @@
   "acceptPolicies": {
     "message": "Ved at markere dette felt accepterer du følgende:"
   },
-  "acceptPoliciesError": {
-    "message": "Servicevilkår og fortrolighedspolitik er ikke blevet bekræftet."
+  "acceptPoliciesRequired": {
+    "message": "Tjenestevilkår og fortrolighedspolitik er ikke blevet accepteret."
   },
   "enableBrowserIntegration": {
     "message": "Tillad browserintegration"
   },
   "enableBrowserIntegrationDesc": {
-    "message": "Browserintegration bruges til biometri i browseren."
+    "message": "Bruges til biometri i browser."
   },
   "browserIntegrationUnsupportedTitle": {
     "message": "Browserintegration understøttes ikke"
@@ -1960,5 +1963,17 @@
   },
   "apiKey": {
     "message": "API-nøgle"
+  },
+  "organizationIsDisabled": {
+    "message": "Organisationen er deaktiveret."
+  },
+  "disabledOrganizationFilterError": {
+    "message": "Elementer i deaktiverede organisationer kan ikke tilgås. Kontakt din organisationsejer for at få hjælp."
+  },
+  "neverLockWarning": {
+    "message": "Er du sikker på, at du vil bruge indstillingen \"Aldrig\"? Hvis du sætter dine låseindstillinger til \"Aldrig\" gemmes din boks krypteringsnøgle på din enhed. Hvis du bruger denne indstilling, skal du sikre dig, at du holder din enhed ordentligt beskyttet."
+  },
+  "cardBrandMir": {
+    "message": "Mir"
   }
 }

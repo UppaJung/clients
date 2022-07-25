@@ -11,28 +11,28 @@
     "description": "Extension description"
   },
   "loginOrCreateNewAccount": {
-    "message": "Log in or create a new account to access your secure vault."
+    "message": "Prijavite se ili napravite novi račun da biste pristupili svom sigurnom trezoru."
   },
   "createAccount": {
-    "message": "Create Account"
+    "message": "Napravi račun"
   },
   "login": {
-    "message": "Log In"
+    "message": "Prijavite se"
   },
   "enterpriseSingleSignOn": {
     "message": "Enterprise Single Sign-On"
   },
   "cancel": {
-    "message": "Cancel"
+    "message": "Otkaži"
   },
   "close": {
-    "message": "Close"
+    "message": "Zatvori"
   },
   "submit": {
-    "message": "Submit"
+    "message": "Potvrdi"
   },
   "emailAddress": {
-    "message": "Email Address"
+    "message": "E-Mail adresa"
   },
   "masterPass": {
     "message": "Master Password"
@@ -423,10 +423,13 @@
   "invalidEmail": {
     "message": "Invalid email address."
   },
-  "masterPassRequired": {
+  "masterPasswordRequired": {
     "message": "Master password is required."
   },
-  "masterPassLength": {
+  "confirmMasterPasswordRequired": {
+    "message": "Master password retype is required."
+  },
+  "masterPasswordMinlength": {
     "message": "Master password must be at least 8 characters long."
   },
   "masterPassDoesntMatch": {
@@ -1480,7 +1483,7 @@
   "acceptPolicies": {
     "message": "By checking this box you agree to the following:"
   },
-  "acceptPoliciesError": {
+  "acceptPoliciesRequired": {
     "message": "Terms of Service and Privacy Policy have not been acknowledged."
   },
   "termsOfService": {
@@ -1964,5 +1967,14 @@
   },
   "ssoKeyConnectorError": {
     "message": "Key Connector error: make sure Key Connector is available and working correctly."
+  },
+  "organizationIsDisabled": {
+    "message": "Organization is disabled."
+  },
+  "disabledOrganizationFilterError": {
+    "message": "Items in disabled Organizations cannot be accessed. Contact your Organization owner for assistance."
+  },
+  "cardBrandMir": {
+    "message": "Mir"
   }
 }

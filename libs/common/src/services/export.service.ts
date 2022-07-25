@@ -1,4 +1,5 @@
 import * as papa from "papaparse";
+import { firstValueFrom } from "rxjs";
 
 import { ApiService } from "../abstractions/api.service";
 import { CipherService } from "../abstractions/cipher.service";
@@ -8,7 +9,7 @@ import {
   ExportFormat,
   ExportService as ExportServiceAbstraction,
 } from "../abstractions/export.service";
-import { FolderService } from "../abstractions/folder.service";
+import { FolderService } from "../abstractions/folder/folder.service.abstraction";
 import { CipherType } from "../enums/cipherType";
 import { DEFAULT_KDF_ITERATIONS, KdfType } from "../enums/kdfType";
 import { Utils } from "../misc/utils";
@@ -115,7 +116,7 @@ export class ExportService implements ExportServiceAbstraction {
     const promises = [];
 
     promises.push(
-      this.folderService.getAllDecrypted().then((folders) => {
+      firstValueFrom(this.folderService.folderViews$).then((folders) => {
         decFolders = folders;
       })
     );
@@ -191,7 +192,7 @@ export class ExportService implements ExportServiceAbstraction {
     const promises = [];
 
     promises.push(
-      this.folderService.getAll().then((f) => {
+      firstValueFrom(this.folderService.folders$).then((f) => {
         folders = f;
       })
     );
@@ -244,38 +245,41 @@ export class ExportService implements ExportServiceAbstraction {
     const promises = [];
 
     promises.push(
-      this.apiService.getCollections(organizationId).then((collections) => {
-        const collectionPromises: any = [];
-        if (collections != null && collections.data != null && collections.data.length > 0) {
-          collections.data.forEach((c) => {
-            const collection = new Collection(new CollectionData(c as CollectionDetailsResponse));
-            collectionPromises.push(
-              collection.decrypt().then((decCol) => {
-                decCollections.push(decCol);
-              })
-            );
-          });
-        }
-        return Promise.all(collectionPromises);
-      })
-    );
-
-    promises.push(
-      this.apiService.getCiphersOrganization(organizationId).then((ciphers) => {
-        const cipherPromises: any = [];
-        if (ciphers != null && ciphers.data != null && ciphers.data.length > 0) {
-          ciphers.data
-            .filter((c) => c.deletedDate === null)
-            .forEach((c) => {
-              const cipher = new Cipher(new CipherData(c));
-              cipherPromises.push(
-                cipher.decrypt().then((decCipher) => {
-                  decCiphers.push(decCipher);
+      this.apiService.getOrganizationExport(organizationId).then((exportData) => {
+        const exportPromises: any = [];
+        if (exportData != null) {
+          if (
+            exportData.collections != null &&
+            exportData.collections.data != null &&
+            exportData.collections.data.length > 0
+          ) {
+            exportData.collections.data.forEach((c) => {
+              const collection = new Collection(new CollectionData(c as CollectionDetailsResponse));
+              exportPromises.push(
+                collection.decrypt().then((decCol) => {
+                  decCollections.push(decCol);
                 })
               );
             });
+          }
+          if (
+            exportData.ciphers != null &&
+            exportData.ciphers.data != null &&
+            exportData.ciphers.data.length > 0
+          ) {
+            exportData.ciphers.data
+              .filter((c) => c.deletedDate === null)
+              .forEach((c) => {
+                const cipher = new Cipher(new CipherData(c));
+                exportPromises.push(
+                  cipher.decrypt().then((decCipher) => {
+                    decCiphers.push(decCipher);
+                  })
+                );
+              });
+          }
         }
-        return Promise.all(cipherPromises);
+        return Promise.all(exportPromises);
       })
     );
 

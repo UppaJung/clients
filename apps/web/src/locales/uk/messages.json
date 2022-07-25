@@ -572,6 +572,9 @@
   "createAccount": {
     "message": "Створити обліковий запис"
   },
+  "startTrial": {
+    "message": "Почати пробний період"
+  },
   "logIn": {
     "message": "Увійти"
   },
@@ -592,6 +595,9 @@
   },
   "masterPassDesc": {
     "message": "Головний пароль використовується для доступу до вашого сховища. Дуже важливо, щоб ви запам'ятали його. Якщо ви забудете головний пароль, його неможливо буде відновити."
+  },
+  "masterPassImportant": {
+    "message": "Головний пароль неможливо відновити, якщо ви забудете його!"
   },
   "masterPassHintDesc": {
     "message": "Якщо ви забудете головний пароль, підказка може допомогти вам згадати його."
@@ -623,17 +629,23 @@
   "invalidEmail": {
     "message": "Неправильна адреса е-пошти."
   },
-  "masterPassRequired": {
-    "message": "Потрібен головний пароль."
+  "masterPasswordRequired": {
+    "message": "Необхідно ввести головний пароль."
   },
-  "masterPassLength": {
-    "message": "Довжина головного пароля повинна бути не менше 8 символів."
+  "confirmMasterPasswordRequired": {
+    "message": "Необхідно повторно ввести головний пароль."
+  },
+  "masterPasswordMinLength": {
+    "message": "Довжина головного пароля має бути принаймні 8 символів."
   },
   "masterPassDoesntMatch": {
     "message": "Підтвердження головного пароля не збігається."
   },
   "newAccountCreated": {
     "message": "Ваш обліковий запис створений! Тепер ви можете увійти."
+  },
+  "trialAccountCreated": {
+    "message": "Обліковий запис успішно створено."
   },
   "masterPassSent": {
     "message": "Ми надіслали вам лист з підказкою для головного пароля."
@@ -864,7 +876,7 @@
     "message": "Експортовані дані вашого сховища знаходяться в незашифрованому вигляді. Вам не слід зберігати чи надсилати їх через незахищені канали (наприклад, е-поштою). Після використання негайно видаліть їх."
   },
   "encExportKeyWarningDesc": {
-    "message": "Цей експорт шифрує ваші дані за допомогою ключа шифрування облікового запису. Якщо ви коли-небудь оновите ключ шифрування облікового запису, ви повинні виконати експорт знову, оскільки не зможете розшифрувати цей файл експорту."
+    "message": "Цей експорт шифрує ваші дані за допомогою ключа шифрування облікового запису. Якщо ви коли-небудь оновите ключ шифрування облікового запису, необхідно виконати експорт знову, оскільки не зможете розшифрувати цей файл експорту."
   },
   "encExportAccountWarningDesc": {
     "message": "Ключі шифрування унікальні для кожного облікового запису користувача Bitwarden, тому ви не можете імпортувати зашифрований експорт до іншого облікового запису."
@@ -1067,7 +1079,7 @@
     "message": "Видалити обліковий запис"
   },
   "deleteAccountDesc": {
-    "message": "Продовжуйте внизу для видалення облікового запису і всіх пов'язаних даних."
+    "message": "Нижче ви зможете завершити видалення облікового запису та всіх даних сховища."
   },
   "deleteAccountWarning": {
     "message": "Видалення облікового запису є незворотною дією. Це не можна буде скасувати."
@@ -1076,7 +1088,7 @@
     "message": "Обліковий запис видалено"
   },
   "accountDeletedDesc": {
-    "message": "Ваш обліковий запис було закрито і всі пов'язані дані було видалено."
+    "message": "Ваш обліковий запис і дані сховища було остаточно видалено."
   },
   "myAccount": {
     "message": "Мій обліковий запис"
@@ -1238,8 +1250,8 @@
   "enabled": {
     "message": "Увімкнено"
   },
-  "activate": {
-    "message": "Активувати"
+  "restoreAccess": {
+    "message": "Відновити доступ"
   },
   "premium": {
     "message": "Преміум",
@@ -1266,8 +1278,8 @@
   "disable": {
     "message": "Вимкнути"
   },
-  "deactivate": {
-    "message": "Деактивувати"
+  "revokeAccess": {
+    "message": "Відкликати доступ"
   },
   "twoStepLoginProviderEnabled": {
     "message": "Для вашого облікового запису увімкнено цей спосіб двоетапної перевірки."
@@ -1494,7 +1506,7 @@
     "message": "Неактивна двоетапна перевірка"
   },
   "inactive2faReportDesc": {
-    "message": "Двоетапна перевірка надає додатковий рівень захисту для ваших облікових записів. Увімкніть двоетапнуперевірку з використанням вбудованих засобів Bitwarden для цих облікових записів, або скористайтеся альтернативним способом."
+    "message": "Двоетапна перевірка забезпечує додатковий рівень захисту для ваших облікових записів. Увімкніть двоетапну перевірку з використанням вбудованих засобів Bitwarden для цих облікових записів, або скористайтеся альтернативним способом."
   },
   "inactive2faFound": {
     "message": "Знайдено записи без двоетапної перевірки"
@@ -1660,6 +1672,12 @@
   "billing": {
     "message": "Оплата"
   },
+  "billingPlanLabel": {
+    "message": "Тарифний план"
+  },
+  "paymentType": {
+    "message": "Тип оплати"
+  },
   "accountCredit": {
     "message": "Кредит рахунку",
     "description": "Financial term. In the case of Bitwarden, a positive balance means that you owe money, while a negative balance means that you have a credit (Bitwarden owes you money)."
@@ -1776,6 +1794,9 @@
   "year": {
     "message": "рік"
   },
+  "yr": {
+    "message": "рік"
+  },
   "month": {
     "message": "місяць"
   },
@@ -1803,6 +1824,9 @@
   },
   "billingInformation": {
     "message": "Платіжна інформація"
+  },
+  "billingTrialSubLabel": {
+    "message": "З вас не буде стягнуто кошти протягом 7 днів пробного періоду."
   },
   "creditCard": {
     "message": "Кредитна карта"
@@ -2160,11 +2184,35 @@
       }
     }
   },
+  "trialThankYou": {
+    "message": "Дякуємо за передплату тарифного плану Bitwarden $PLAN$!",
+    "placeholders": {
+      "plan": {
+        "content": "$1",
+        "example": "Teams"
+      }
+    }
+  },
+  "trialPaidInfoMessage": {
+    "message": "Через 7 днів пробного періоду $PLAN$ вас буде переведено на платний тарифний план.",
+    "placeholders": {
+      "plan": {
+        "content": "$1",
+        "example": "Teams"
+      }
+    }
+  },
+  "trialConfirmationEmail": {
+    "message": "Ми надіслали підтверджувальний лист на електронну пошту вашої команди "
+  },
   "monthly": {
     "message": "Щомісяця"
   },
   "annually": {
     "message": "Щороку"
+  },
+  "annual": {
+    "message": "Річний"
   },
   "basePrice": {
     "message": "Базова ціна"
@@ -2232,11 +2280,11 @@
   "removeUserConfirmation": {
     "message": "Ви справді хочете вилучити цього користувача?"
   },
-  "deactivateUserConfirmation": {
-    "message": "Учасник більше не матиме доступу до організації, але й надалі може користуватися особистим сховищем."
+  "removeOrgUserConfirmation": {
+    "message": "Після вилучення учасник більше не матиме доступу до даних організації. Ця дія незворотна. Щоб повторно додати учасника до організації, необхідно запросити його знову."
   },
-  "activateUserConfirmation": {
-    "message": "Ви дійсно хочете активувати цього користувача, надаючи йому доступ до організації?"
+  "revokeUserConfirmation": {
+    "message": "Після відкликання учасник більше не матиме доступу до даних організації. Для швидкого відновлення доступу учасника перейдіть на вкладку Відкликані."
   },
   "removeUserConfirmationKeyConnector": {
     "message": "Попередження! Цей користувач потребує Key Connector для керування шифруванням. Вилучення цього користувача з вашої організації остаточно вимкне його обліковий запис. Цю дію неможливо скасувати. Ви хочете продовжити?"
@@ -2320,7 +2368,7 @@
     "message": "Користувач з найвищими привілеями, який може керувати всіма налаштуваннями організації."
   },
   "clientOwnerDesc": {
-    "message": "Цей користувач повинен бути незалежним від постачальника. Якщо постачальник не пов'язаний з організацією, цей користувач підтримуватиме право власності організації."
+    "message": "Цей користувач має бути незалежним від постачальника. Якщо постачальник не пов'язаний з організацією, цей користувач підтримуватиме право власності організації."
   },
   "admin": {
     "message": "Адміністратор"
@@ -2583,8 +2631,8 @@
       }
     }
   },
-  "deactivatedUserId": {
-    "message": "Деактивований користувач $ID$.",
+  "removeUserIdAccess": {
+    "message": "Вилучити доступ для $ID$",
     "placeholders": {
       "id": {
         "content": "$1",
@@ -2592,8 +2640,8 @@
       }
     }
   },
-  "activatedUserId": {
-    "message": "Активований користувач $ID$.",
+  "revokedUserId": {
+    "message": "Доступ до організації для $ID$ відкликано.",
     "placeholders": {
       "id": {
         "content": "$1",
@@ -2601,8 +2649,8 @@
       }
     }
   },
-  "deactivateUserId": {
-    "message": "Деактивувати користувача $ID$?",
+  "restoredUserId": {
+    "message": "Доступ до організації для $ID$ відновлено.",
     "placeholders": {
       "id": {
         "content": "$1",
@@ -2610,8 +2658,8 @@
       }
     }
   },
-  "activateUserId": {
-    "message": "Активувати користувача $ID$?",
+  "revokeUserId": {
+    "message": "Відкликати доступ для $ID$",
     "placeholders": {
       "id": {
         "content": "$1",
@@ -3159,8 +3207,8 @@
   "acceptPolicies": {
     "message": "Позначивши цей прапорець, ви погоджуєтеся з:"
   },
-  "acceptPoliciesError": {
-    "message": "Умови користування та політика приватності не погоджені."
+  "acceptPoliciesRequired": {
+    "message": "Ви не погодилися з умовами користування та політикою приватності."
   },
   "termsOfService": {
     "message": "Умови користування"
@@ -3208,6 +3256,9 @@
   },
   "organizationIsDisabled": {
     "message": "Організацію вимкнено."
+  },
+  "disabledOrganizationFilterError": {
+    "message": "Записи у вимкнених організаціях недоступні. Зверніться до власника вашої організації для отримання допомоги."
   },
   "licenseIsExpired": {
     "message": "Термін дії ліцензії завершився."
@@ -3294,7 +3345,7 @@
     "message": "Поворот ключа API спричинить анулювання попереднього ключа. Ви можете повернути свій ключ API, якщо вважаєте, що поточний ключ більше не є безпечним для використання."
   },
   "apiKeyWarning": {
-    "message": "Ваш ключ API має повний доступ до організації. Він повинен зберігатися в секреті."
+    "message": "Ваш ключ API має повний доступ до організації. Його необхідно надійно зберігати."
   },
   "userApiKeyDesc": {
     "message": "Ваш ключ API може бути використаний для авторизації в Bitwarden CLI."
@@ -3313,7 +3364,7 @@
     "message": "Повернути ключ API"
   },
   "selectOneCollection": {
-    "message": "Ви повинні обрати принаймні одну збірку."
+    "message": "Необхідно вибрати принаймні одну збірку."
   },
   "couldNotChargeCardPayInvoice": {
     "message": "Нам не вдалося виконати оплату з вашої картки. Будь ласка, перегляньте і проведіть оплату за рахунком, вказаним внизу."
@@ -3325,7 +3376,7 @@
     "message": "Ви не можете виконати цю дію під час використання способу оплати покупки в додатку."
   },
   "manageSubscriptionFromStore": {
-    "message": "Ви повинні керувати своєю передплатою з магазину, в якому виконали покупку в додатку."
+    "message": "Керувати своєю передплатою потрібно з магазину, в якому ви виконали покупку в додатку."
   },
   "minLength": {
     "message": "Мінімальна довжина"
@@ -3333,20 +3384,26 @@
   "clone": {
     "message": "Клонувати"
   },
+  "masterPassPolicyTitle": {
+    "message": "Вимоги до головного пароля"
+  },
   "masterPassPolicyDesc": {
-    "message": "Встановіть мінімальні вимоги надійності головного пароля."
+    "message": "Встановіть вимоги надійності головного пароля."
+  },
+  "twoStepLoginPolicyTitle": {
+    "message": "Вимагати двоетапну перевірку"
   },
   "twoStepLoginPolicyDesc": {
-    "message": "Зобов'язувати користувачів встановлювати двоетапну перевірку в їхніх особистих облікових записах."
+    "message": "Зобов'язувати учасників встановлювати двоетапну перевірку."
   },
   "twoStepLoginPolicyWarning": {
-    "message": "Учасники організації, які не є власниками, чи адміністратори, в яких не увімкнено двоетапну перевірку для їхніх особистих облікових записів, будуть вилучені з організації та проінформовані поштовим повідомленням."
+    "message": "Учасники організації, які не є власниками, чи адміністратори, в яких не увімкнено двоетапну перевірку для їхніх облікових записів, будуть вилучені з організації та проінформовані поштовим повідомленням."
   },
   "twoStepLoginPolicyUserWarning": {
     "message": "Ви включені до організації, яка зобов'язує використання двоетапної перевірки у вашому обліковому записі. Якщо ви вимкнете всі способи двоетапної перевірки, вас буде автоматично вилучено з цієї організації."
   },
   "passwordGeneratorPolicyDesc": {
-    "message": "Встановіть мінімальні вимоги для параметрів генерування пароля."
+    "message": "Встановити вимоги для генерування пароля."
   },
   "passwordGeneratorPolicyInEffect": {
     "message": "На параметри генератора впливають одна чи декілька політик організації."
@@ -3567,7 +3624,7 @@
     "message": "Єдина організація"
   },
   "singleOrgDesc": {
-    "message": "Заборонити користувачам приєднуватися до будь-яких інших організацій."
+    "message": "Заборонити користувачам приєднуватися до інших організацій."
   },
   "singleOrgBlockCreateMessage": {
     "message": "Ваша організація має політику, що не дозволяє вам приєднуватися до більш, ніж однієї організації. Будь ласка, зв'яжіться з адміністратором вашої організації, або увійдіть з іншим обліковим записом Bitwarden."
@@ -3576,10 +3633,10 @@
     "message": "Учасники організації, які не є власниками чи адміністраторами, але вже є учасниками іншої організації, будуть вилучені з вашої організації."
   },
   "requireSso": {
-    "message": "Авторизація через єдиний вхід (SSO)"
+    "message": "Вимагати авторизацію через єдиний вхід (SSO)"
   },
   "requireSsoPolicyDesc": {
-    "message": "Вимагати від користувачів входити в систему через єдиний вхід (SSO) компанії."
+    "message": "Зобов'язувати учасників входити в систему через єдиний вхід (SSO) компанії."
   },
   "prerequisite": {
     "message": "Передумови"
@@ -3666,8 +3723,8 @@
   "disabled": {
     "message": "Вимкнено"
   },
-  "deactivated": {
-    "message": "Деактивовано"
+  "revoked": {
+    "message": "Відкликані"
   },
   "sendLink": {
     "message": "Посилання на відправлення",
@@ -3880,10 +3937,10 @@
     }
   },
   "personalOwnership": {
-    "message": "Особиста власність"
+    "message": "Вилучити особисте сховище"
   },
   "personalOwnershipPolicyDesc": {
-    "message": "Вимагати від користувачів зберігати записи до організації, вилучивши можливість особистої власності."
+    "message": "Зобов'язувати учасників зберігати записи до організації, вилучивши параметр особистого сховища."
   },
   "personalOwnershipExemption": {
     "message": "Власники організації та адміністратори звільняються від дотримання цієї політики."
@@ -3892,10 +3949,10 @@
     "message": "У зв'язку з корпоративною політикою, вам не дозволено зберігати записи до особистого сховища. Змініть налаштування власності на організацію та виберіть серед доступних збірок."
   },
   "disableSend": {
-    "message": "Вимкнути відправлення"
+    "message": "Вилучити відправлення"
   },
   "disableSendPolicyDesc": {
-    "message": "Не дозволяти користувачам створювати чи змінювати відправлення Bitwarden. Видалення наявних відправлень все ще дозволяється.",
+    "message": "Не дозволяти учасникам створювати чи змінювати відправлення.",
     "description": "'Send' is a noun and the name of a feature called 'Bitwarden Send'. It should not be translated."
   },
   "disableSendExemption": {
@@ -3921,7 +3978,7 @@
     "message": "Користувачі організації, які можуть керувати політиками організації, звільняються від дотримання цієї політики."
   },
   "disableHideEmail": {
-    "message": "Не дозволяти користувачам приховувати свою адресу електронної пошти від отримувачів під час створення чи редагування відправлень.",
+    "message": "Завжди показувати отримувачам адресу е-пошти учасників під час створення чи редагування відправлень.",
     "description": "'Send' is a noun and the name of a feature called 'Bitwarden Send'. It should not be translated."
   },
   "sendOptionsPolicyInEffect": {
@@ -4004,7 +4061,7 @@
     "message": "Керувати скиданням пароля"
   },
   "disableRequiredError": {
-    "message": "Перш ніж вимкнути цю політику, ви повинні вручну вимкнути політику $POLICYNAME$.",
+    "message": "Перш ніж вимкнути цю політику, вам необхідно вручну вимкнути політику $POLICYNAME$.",
     "placeholders": {
       "policyName": {
         "content": "$1",
@@ -4220,10 +4277,10 @@
     "message": "Скидання головного пароля"
   },
   "resetPasswordPolicyDescription": {
-    "message": "Дозволити адміністраторам організації скидати головний пароль користувачів."
+    "message": "Дозволити адміністраторам скидати головний пароль учасників."
   },
   "resetPasswordPolicyWarning": {
-    "message": "Користувачі в організації повинні виконати самостійне розгортання, або отримати автоматичне розгортання, перш ніж адміністратори зможуть скинути їхній пароль."
+    "message": "Користувачі в організації мають виконати самостійне розгортання, або отримати автоматичне розгортання, перш ніж адміністратори зможуть скинути їхній пароль."
   },
   "resetPasswordPolicyAutoEnroll": {
     "message": "Автоматичне розгортання"
@@ -4270,11 +4327,11 @@
   "removeUsersWarning": {
     "message": "Ви дійсно хочете вилучити зазначених користувачів? Цей процес може тривати кілька секунд і його неможливо перервати чи скасувати."
   },
-  "deactivateUsersWarning": {
-    "message": "Ви дійсно хочете деактивувати зазначених учасників? Вони більше не матимуть доступу до організації, але й надалі можуть користуватися особистим сховищем. Процес може тривати кілька секунд і його не можна перервати чи скасувати."
+  "removeOrgUsersConfirmation": {
+    "message": "Після вилучення учасники більше не матимуть доступу до даних організації. Ця дія незворотна. Щоб повторно додати учасників до організації, необхідно запросити їх знову. Процес може тривати кілька секунд і його неможливо перервати чи скасувати."
   },
-  "activateUsersWarning": {
-    "message": "Ви дійсно хочете активувати зазначених учасників, надаючи їм доступ до організації? Процес може тривати кілька секунд і його не можна перервати чи скасувати."
+  "revokeUsersWarning": {
+    "message": "Після відкликання учасники більше не матимуть доступу до даних організації. Для швидкого відновлення доступу учасників перейдіть на вкладку Відкликані. Процес може тривати кілька секунд і його неможливо перервати чи скасувати."
   },
   "theme": {
     "message": "Тема"
@@ -4306,11 +4363,11 @@
   "bulkRemovedMessage": {
     "message": "Успішно вилучено"
   },
-  "bulkDeactivatedMessage": {
-    "message": "Успішно деактивовано"
+  "bulkRevokedMessage": {
+    "message": "Доступ до організації успішно відкликано"
   },
-  "bulkActivatedMessage": {
-    "message": "Успішно активовано"
+  "bulkRestoredMessage": {
+    "message": "Доступ до організації успішно відновлено"
   },
   "bulkFilteredMessage": {
     "message": "Виключено, не застосовується для цієї дії."
@@ -4321,17 +4378,17 @@
   "removeUsers": {
     "message": "Вилучити користувачів"
   },
-  "deactivateUsers": {
-    "message": "Деактивувати користувачів"
+  "revokeUsers": {
+    "message": "Відкликати користувачів"
   },
-  "activateUsers": {
-    "message": "Активувати користувачів"
+  "restoreUsers": {
+    "message": "Відновити користувачів"
   },
   "error": {
     "message": "Помилка"
   },
   "resetPasswordManageUsers": {
-    "message": "Керування користувачами повинно також бути увімкнено з дозволом Керувати скиданням пароля"
+    "message": "Керування користувачами має також бути увімкнено з дозволом Керувати скиданням пароля"
   },
   "setupProvider": {
     "message": "Налаштування постачальника"
@@ -4458,16 +4515,16 @@
     "message": "Оновити головний пароль"
   },
   "updateMasterPasswordWarning": {
-    "message": "Ваш головний пароль нещодавно був змінений адміністратором організації. Щоб отримати доступ до сховища, ви повинні оновити свій головний пароль зараз. Продовживши, ви вийдете з поточного сеансу, після чого необхідно буде повторно виконати вхід. Сеанси на інших пристроях можуть залишатися активними протягом однієї години."
+    "message": "Ваш головний пароль нещодавно був змінений адміністратором організації. Щоб отримати доступ до сховища, вам необхідно оновити свій головний пароль зараз. Продовживши, ви вийдете з поточного сеансу, після чого потрібно буде повторно виконати вхід. Сеанси на інших пристроях можуть залишатися активними протягом однієї години."
   },
   "masterPasswordInvalidWarning": {
-    "message": "Ваш головний пароль не відповідає вимогам політики цієї організації. Щоб приєднатися до організації, ви повинні оновити свій головний пароль зараз. Продовживши, ви вийдете з поточного сеансу, після чого необхідно буде повторно виконати вхід. Сеанси на інших пристроях можуть залишатися активними протягом однієї години."
+    "message": "Ваш головний пароль не відповідає вимогам політики цієї організації. Щоб приєднатися до організації, необхідно оновити свій головний пароль зараз. Продовживши, ви вийдете з поточного сеансу, після чого потрібно буде повторно виконати вхід. Сеанси на інших пристроях можуть залишатися активними протягом однієї години."
   },
   "maximumVaultTimeout": {
     "message": "Час очікування сховища"
   },
   "maximumVaultTimeoutDesc": {
-    "message": "Налаштувати максимальний час очікування сховища для всіх користувачів."
+    "message": "Встановити максимальний час очікування сховища для учасників."
   },
   "maximumVaultTimeoutLabel": {
     "message": "Максимальний час очікування сховища"
@@ -4507,10 +4564,10 @@
     "message": "Час очікування сховища поза межами дозволеного діапазону."
   },
   "disablePersonalVaultExport": {
-    "message": "Вимкнути експорт особистого сховища"
+    "message": "Вилучити експорт особистого сховища"
   },
   "disablePersonalVaultExportDesc": {
-    "message": "Забороняє користувачам експортувати їхні особисті дані сховища."
+    "message": "Заборонити учасникам експортувати дані їхнього особистого сховища."
   },
   "vaultExportDisabled": {
     "message": "Експорт сховища вимкнено"
@@ -4737,9 +4794,6 @@
   "sponsorshipCreated": {
     "message": "Спонсорування створено"
   },
-  "revoke": {
-    "message": "Відкликати"
-  },
   "emailSent": {
     "message": "Лист надіслано"
   },
@@ -4801,16 +4855,16 @@
     "message": "Після налаштування вашу конфігурацію буде збережено та учасники зможуть авторизуватися з використанням облікових даних їхнього постачальника."
   },
   "ssoPolicyHelpStart": {
-    "message": "Увімкнути",
-    "description": "This will be used as part of a larger sentence, broken up to include links. The full sentence will read 'Enable the SSO Authentication policy to require all members to log in with SSO.'"
+    "message": "Використовувати",
+    "description": "This will be used as part of a larger sentence, broken up to include links. The full sentence will read 'Use the require single-sign-on authentication policy to require all members to log in with SSO.'"
   },
   "ssoPolicyHelpLink": {
-    "message": "Політика авторизації SSO",
-    "description": "This will be used as part of a larger sentence, broken up to include links. The full sentence will read 'Enable the SSO Authentication policy to require all members to log in with SSO.'"
+    "message": "обов'язкову політику єдиного входу (SSO)",
+    "description": "This will be used as part of a larger sentence, broken up to include links. The full sentence will read 'Use the require single-sign-on authentication policy to require all members to log in with SSO.'"
   },
   "ssoPolicyHelpEnd": {
     "message": "щоб вимагати в усіх учасників виконувати вхід з SSO.",
-    "description": "This will be used as part of a larger sentence, broken up to include links. The full sentence will read 'Enable the SSO Authentication policy to require all members to log in with SSO.'"
+    "description": "This will be used as part of a larger sentence, broken up to include links. The full sentence will read 'Use the require single-sign-on authentication policy to require all members to log in with SSO.'"
   },
   "ssoPolicyHelpKeyConnector": {
     "message": "Для встановлення розшифрування Key Connector необхідні політики авторизації SSO та єдиної організації."
@@ -5165,5 +5219,92 @@
         "example": "My Email"
       }
     }
+  },
+  "scim": {
+    "message": "Забезпечення SCIM",
+    "description": "The text, 'SCIM', is an acronymn and should not be translated."
+  },
+  "scimDescription": {
+    "message": "Автоматично забезпечувати користувачів та групи бажаним постачальником облікових даних через SCIM",
+    "description": "the text, 'SCIM', is an acronymn and should not be translated."
+  },
+  "scimEnabledCheckboxDesc": {
+    "message": "Увімкнути SCIM",
+    "description": "the text, 'SCIM', is an acronymn and should not be translated."
+  },
+  "scimEnabledCheckboxDescHelpText": {
+    "message": "Встановіть бажаного постачальника облікових даних, налаштувавши URL-адресу та ключ API для SCIM",
+    "description": "the text, 'SCIM', is an acronymn and should not be translated."
+  },
+  "scimApiKeyHelperText": {
+    "message": "Цей ключ API має доступ до керування користувачами в межах вашої організації. Його необхідно надійно зберігати."
+  },
+  "copyScimKey": {
+    "message": "Копіювати ключ API для SCIM до буфера обміну",
+    "description": "the text, 'SCIM' and 'API', are acronymns and should not be translated."
+  },
+  "rotateScimKey": {
+    "message": "Оновити ключ API для SCIM",
+    "description": "the text, 'SCIM' and 'API', are acronymns and should not be translated."
+  },
+  "rotateScimKeyWarning": {
+    "message": "Ви дійсно хочете оновити ключ API для SCIM? Поточний ключ надалі не працюватиме з жодними наявними інтеграціями.",
+    "description": "the text, 'SCIM' and 'API', are acronymns and should not be translated."
+  },
+  "rotateKey": {
+    "message": "Оновити ключ"
+  },
+  "scimApiKey": {
+    "message": "Ключ API для SCIM",
+    "description": "the text, 'SCIM' and 'API', are acronymns and should not be translated."
+  },
+  "copyScimUrl": {
+    "message": "Копіювати URL кінцевої точки SCIM до буфера обміну",
+    "description": "the text, 'SCIM' and 'URL', are acronymns and should not be translated."
+  },
+  "scimUrl": {
+    "message": "URL-адреса SCIM",
+    "description": "the text, 'SCIM' and 'URL', are acronymns and should not be translated."
+  },
+  "scimApiKeyRotated": {
+    "message": "Ключ API для SCIM було успішно оновлено",
+    "description": "the text, 'SCIM' and 'API', are acronymns and should not be translated."
+  },
+  "scimSettingsSaved": {
+    "message": "Налаштування SCIM було успішно збережено",
+    "description": "the text, 'SCIM', is an acronymn and should not be translated."
+  },
+  "inputRequired": {
+    "message": "Необхідно ввести дані."
+  },
+  "inputEmail": {
+    "message": "Введені дані не є адресою е-пошти."
+  },
+  "inputMinLength": {
+    "message": "Введені дані мають бути довжиною принаймні $COUNT$ символів.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "8"
+      }
+    }
+  },
+  "fieldsNeedAttention": {
+    "message": "$COUNT$ поле (поля) вище потребують вашої уваги.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "4"
+      }
+    }
+  },
+  "turnOn": {
+    "message": "Увімкнути"
+  },
+  "on": {
+    "message": "Увімкнено"
+  },
+  "cardBrandMir": {
+    "message": "Mir"
   }
 }

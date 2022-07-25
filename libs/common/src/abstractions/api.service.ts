@@ -1,3 +1,4 @@
+import { OrganizationApiKeyType } from "../enums/organizationApiKeyType";
 import { OrganizationConnectionType } from "../enums/organizationConnectionType";
 import { PolicyType } from "../enums/policyType";
 import { SetKeyConnectorKeyRequest } from "../models/request/account/setKeyConnectorKeyRequest";
@@ -23,7 +24,6 @@ import { EmergencyAccessInviteRequest } from "../models/request/emergencyAccessI
 import { EmergencyAccessPasswordRequest } from "../models/request/emergencyAccessPasswordRequest";
 import { EmergencyAccessUpdateRequest } from "../models/request/emergencyAccessUpdateRequest";
 import { EventRequest } from "../models/request/eventRequest";
-import { FolderRequest } from "../models/request/folderRequest";
 import { GroupRequest } from "../models/request/groupRequest";
 import { IapCheckRequest } from "../models/request/iapCheckRequest";
 import { ApiTokenRequest } from "../models/request/identityToken/apiTokenRequest";
@@ -117,7 +117,6 @@ import {
   EmergencyAccessViewResponse,
 } from "../models/response/emergencyAccessResponse";
 import { EventResponse } from "../models/response/eventResponse";
-import { FolderResponse } from "../models/response/folderResponse";
 import { GroupDetailsResponse, GroupResponse } from "../models/response/groupResponse";
 import { IdentityCaptchaResponse } from "../models/response/identityCaptchaResponse";
 import { IdentityTokenResponse } from "../models/response/identityTokenResponse";
@@ -131,6 +130,7 @@ import {
   OrganizationConnectionConfigApis,
   OrganizationConnectionResponse,
 } from "../models/response/organizationConnectionResponse";
+import { OrganizationExportResponse } from "../models/response/organizationExportResponse";
 import { OrganizationKeysResponse } from "../models/response/organizationKeysResponse";
 import { OrganizationResponse } from "../models/response/organizationResponse";
 import { OrganizationSponsorshipSyncStatusResponse } from "../models/response/organizationSponsorshipSyncStatusResponse";
@@ -182,6 +182,16 @@ import { UserKeyResponse } from "../models/response/userKeyResponse";
 import { SendAccessView } from "../models/view/sendAccessView";
 
 export abstract class ApiService {
+  send: (
+    method: "GET" | "POST" | "PUT" | "DELETE",
+    path: string,
+    body: any,
+    authed: boolean,
+    hasResponse: boolean,
+    apiUrl?: string,
+    alterHeaders?: (headers: Headers) => void
+  ) => Promise<any>;
+
   postIdentityToken: (
     request: PasswordTokenRequest | SsoTokenRequest | ApiTokenRequest
   ) => Promise<IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse>;
@@ -228,11 +238,6 @@ export abstract class ApiService {
   getUserBillingHistory: () => Promise<BillingHistoryResponse>;
   getUserBillingPayment: () => Promise<BillingPaymentResponse>;
 
-  getFolder: (id: string) => Promise<FolderResponse>;
-  postFolder: (request: FolderRequest) => Promise<FolderResponse>;
-  putFolder: (id: string, request: FolderRequest) => Promise<FolderResponse>;
-  deleteFolder: (id: string) => Promise<any>;
-
   getSend: (id: string) => Promise<SendResponse>;
   postSendAccess: (
     id: string,
@@ -259,6 +264,7 @@ export abstract class ApiService {
   renewSendFileUploadUrl: (sendId: string, fileId: string) => Promise<SendFileUploadDataResponse>;
 
   getCipher: (id: string) => Promise<CipherResponse>;
+  getFullCipherDetails: (id: string) => Promise<CipherResponse>;
   getCipherAdmin: (id: string) => Promise<CipherResponse>;
   getAttachmentData: (
     cipherId: string,
@@ -444,13 +450,13 @@ export abstract class ApiService {
     organizationId: string,
     request: OrganizationUserBulkRequest
   ) => Promise<ListResponse<OrganizationUserBulkResponse>>;
-  deactivateOrganizationUser: (organizationId: string, id: string) => Promise<any>;
-  deactivateManyOrganizationUsers: (
+  revokeOrganizationUser: (organizationId: string, id: string) => Promise<any>;
+  revokeManyOrganizationUsers: (
     organizationId: string,
     request: OrganizationUserBulkRequest
   ) => Promise<ListResponse<OrganizationUserBulkResponse>>;
-  activateOrganizationUser: (organizationId: string, id: string) => Promise<any>;
-  activateManyOrganizationUsers: (
+  restoreOrganizationUser: (organizationId: string, id: string) => Promise<any>;
+  restoreManyOrganizationUsers: (
     organizationId: string,
     request: OrganizationUserBulkRequest
   ) => Promise<ListResponse<OrganizationUserBulkResponse>>;
@@ -569,7 +575,8 @@ export abstract class ApiService {
     request: OrganizationApiKeyRequest
   ) => Promise<ApiKeyResponse>;
   getOrganizationApiKeyInformation: (
-    id: string
+    id: string,
+    type?: OrganizationApiKeyType
   ) => Promise<ListResponse<OrganizationApiKeyInformationResponse>>;
   postOrganizationRotateApiKey: (
     id: string,
@@ -728,4 +735,5 @@ export abstract class ApiService {
     request: KeyConnectorUserKeyRequest
   ) => Promise<void>;
   getKeyConnectorAlive: (keyConnectorUrl: string) => Promise<void>;
+  getOrganizationExport: (organizationId: string) => Promise<OrganizationExportResponse>;
 }
