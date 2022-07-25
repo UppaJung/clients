@@ -15,10 +15,7 @@ import { PlatformUtilsService } from "@bitwarden/common/abstractions/platformUti
 import { StateService } from "@bitwarden/common/abstractions/state.service";
 import { VaultTimeoutService } from "@bitwarden/common/abstractions/vaultTimeout.service";
 
-import {
-  invokeGetMasterPasswordDerivedFromDiceKey,
-  invokeIsDiceKeysAppInstalled,
-} from "./login.component";
+import { DiceKeysApiServiceClient } from "./login.component";
 
 const BroadcasterSubscriptionId = "LockComponent";
 
@@ -61,14 +58,14 @@ export class LockComponent extends BaseLockComponent implements OnDestroy {
     );
   }
 
-  diceKeysAppIsInstalled = false;
-  checkIfDiceKeysInstalled = async () => {
-    this.diceKeysAppIsInstalled = await invokeIsDiceKeysAppInstalled();
+  diceKeysAppInstalled = false;
+  checkIfDiceKeysAppInstalled = async () => {
+    this.diceKeysAppInstalled = await DiceKeysApiServiceClient.checkIfDiceKeysAppInstalled();
   };
 
   async requestDiceKeyDerivedMasterPassword(): Promise<void> {
     try {
-      const { password } = await invokeGetMasterPasswordDerivedFromDiceKey();
+      const { password } = await DiceKeysApiServiceClient.getMasterPasswordDerivedFromDiceKey();
       this.masterPassword = password;
     } catch {
       /**/
@@ -77,7 +74,7 @@ export class LockComponent extends BaseLockComponent implements OnDestroy {
 
   async ngOnInit() {
     await super.ngOnInit();
-    this.checkIfDiceKeysInstalled();
+    this.checkIfDiceKeysAppInstalled();
     const autoPromptBiometric = !(await this.stateService.getNoAutoPromptBiometrics());
 
     this.route.queryParams.subscribe((params) => {
@@ -96,7 +93,7 @@ export class LockComponent extends BaseLockComponent implements OnDestroy {
             this.onWindowHidden();
             break;
           case "windowIsFocused":
-            this.checkIfDiceKeysInstalled();
+            this.checkIfDiceKeysAppInstalled();
             if (this.deferFocus === null) {
               this.deferFocus = !message.windowIsFocused;
               if (!this.deferFocus) {

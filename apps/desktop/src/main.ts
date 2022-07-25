@@ -13,7 +13,7 @@ import { TrayMain } from "@bitwarden/electron/tray.main";
 import { UpdaterMain } from "@bitwarden/electron/updater.main";
 import { WindowMain } from "@bitwarden/electron/window.main";
 
-import { DiceKeyApiService } from "./electronDiceKeyApi.service";
+import { DiceKeysApiService } from "./electronDiceKeyApi.service";
 import { BiometricMain } from "./main/biometric/biometric.main";
 import { DesktopCredentialStorageListener } from "./main/desktopCredentialStorageListener";
 import { MenuMain } from "./main/menu/menu.main";
@@ -213,7 +213,7 @@ export class Main {
       .filter((s) => s.indexOf("bitwarden:/") === 0)
       .forEach((s) => {
         const url = new URL(s);
-        if (DiceKeyApiService.handlePotentialApiResponseUrl(url)) {
+        if (DiceKeysApiService.handlePotentialApiResponseUrl(url)) {
           // The URL was for the DiceKey API service and does not need
           // further processing.
           return;

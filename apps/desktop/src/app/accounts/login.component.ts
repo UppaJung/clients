@@ -16,32 +16,31 @@ import { PlatformUtilsService } from "@bitwarden/common/abstractions/platformUti
 import { StateService } from "@bitwarden/common/abstractions/state.service";
 import { SyncService } from "@bitwarden/common/abstractions/sync.service";
 
-import type { GetMasterPasswordDerivedFromDiceKeyResponse } from "../../electronDiceKeyApi.service";
+import type { DiceKeysApiServiceInterface } from "../../electronDiceKeyApi.service";
 
 import { EnvironmentComponent } from "./environment.component";
 
 const BroadcasterSubscriptionId = "LoginComponent";
 
-const isGetMasterPasswordDerivedFromDiceKeyResponse = (
-  candidate: unknown
-): candidate is GetMasterPasswordDerivedFromDiceKeyResponse =>
-  candidate != null &&
-  typeof candidate === "object" &&
-  typeof (candidate as GetMasterPasswordDerivedFromDiceKeyResponse).password === "string";
-
-export const invokeGetMasterPasswordDerivedFromDiceKey = async () => {
-  const result = (await ipcRenderer.invoke("getMasterPasswordDerivedFromDiceKey")) as unknown;
-  // Validate that the response is not an exception by ensuring it has the
-  // right format for a valid response.
-  if (isGetMasterPasswordDerivedFromDiceKeyResponse(result)) {
-    return result;
-  } else {
-    throw result;
-  }
-};
-
-export const invokeIsDiceKeysAppInstalled = () =>
-  ipcRenderer.invoke("isDiceKeysAppInstalled") as Promise<boolean>;
+// Awaited is built into TS >=4.5, but Bitwarden isn't using that yet.
+export type Awaited<T> = T extends Promise<infer U> ? U : T;
+export const DiceKeysApiServiceClient = new (class DiceKeysApiServiceClientImplementation {
+  private static implement =
+    <FN_NAME extends keyof DiceKeysApiServiceInterface>(fnName: FN_NAME) =>
+    async (
+      ...args: Parameters<DiceKeysApiServiceInterface[FN_NAME]>
+    ): Promise<Awaited<ReturnType<DiceKeysApiServiceInterface[FN_NAME]>>> => {
+      return (await ipcRenderer.invoke(fnName)) as Awaited<
+        ReturnType<DiceKeysApiServiceInterface[FN_NAME]>
+      >;
+    };
+  getMasterPasswordDerivedFromDiceKey = DiceKeysApiServiceClientImplementation.implement(
+    "getMasterPasswordDerivedFromDiceKey"
+  );
+  checkIfDiceKeysAppInstalled = DiceKeysApiServiceClientImplementation.implement(
+    "checkIfDiceKeysAppInstalled"
+  );
+})();
 
 @Component({
   selector: "app-login",
@@ -90,14 +89,14 @@ export class LoginComponent extends BaseLoginComponent implements OnDestroy {
     };
   }
 
-  diceKeysAppIsInstalled = false;
-  checkIfDiceKeysInstalled = async () => {
-    this.diceKeysAppIsInstalled = await invokeIsDiceKeysAppInstalled();
+  diceKeysAppInstalled = false;
+  checkIfDiceKeysAppInstalled = async () => {
+    this.diceKeysAppInstalled = await DiceKeysApiServiceClient.checkIfDiceKeysAppInstalled();
   };
 
   async ngOnInit() {
     await super.ngOnInit();
-    this.checkIfDiceKeysInstalled();
+    this.checkIfDiceKeysAppInstalled();
     this.broadcasterService.subscribe(BroadcasterSubscriptionId, async (message: any) => {
       this.ngZone.run(() => {
         switch (message.command) {
@@ -105,7 +104,7 @@ export class LoginComponent extends BaseLoginComponent implements OnDestroy {
             this.onWindowHidden();
             break;
           case "windowIsFocused":
-            this.checkIfDiceKeysInstalled();
+            this.checkIfDiceKeysAppInstalled();
             if (this.deferFocus === null) {
               this.deferFocus = !message.windowIsFocused;
               if (!this.deferFocus) {
@@ -143,7 +142,7 @@ export class LoginComponent extends BaseLoginComponent implements OnDestroy {
 
   async requestDiceKeyDerivedMasterPassword(): Promise<void> {
     try {
-      const { password } = await invokeGetMasterPasswordDerivedFromDiceKey();
+      const { password } = await DiceKeysApiServiceClient.getMasterPasswordDerivedFromDiceKey();
       // Set the master password
       this.masterPassword = password;
     } catch {

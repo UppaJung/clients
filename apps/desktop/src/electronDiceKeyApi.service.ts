@@ -2,17 +2,50 @@ import { spawn } from "child_process";
 
 import { shell, ipcMain } from "electron";
 
+/**
+ * Fields returned when `getMasterPasswordDerivedFromDiceKey`
+ * is called.
+ */
 export interface GetMasterPasswordDerivedFromDiceKeyResponse {
   password: string;
   centerLetterAndDigit?: string;
-
   sequenceNumber?: string;
 }
+
+export interface DiceKeysApiServiceInterface {
+  getMasterPasswordDerivedFromDiceKey: () => Promise<{
+    /** The password generated from a DiceKey */
+    password: string;
+    /** The center letter and digit of the DiceKey used to generate a password.
+     * This may be stored and kept as a hint so that the user knows which DiceKey
+     * to use to re-generate the password in the future.
+     */
+    centerLetterAndDigit?: string;
+    /** The sequence number added to the recipe to change the password. For example,
+     * a user might use different sequence numbers to generate master passwords for two
+     * different users in the same family, or increment a sequence number if they think
+     * their old master password might have been compromised.
+     */
+    sequenceNumber?: string;
+  }>;
+  checkIfDiceKeysAppInstalled: () => Promise<boolean>;
+}
+
+/**
+ * Execute a shell command and test to see whether the response to
+ * standard out matches a potential outcome
+ * @param testOutputCallback a function that takes strings sent to standard out
+ * and returns true if the shell test should return true.
+ * @param spawnArgs args passed on to the electron's spawn command
+ * @returns true IFF any call to testOutputCallback with data the shell command
+ * sent to stdout returns true.  False otherwise.
+ */
 const shellTest = (
-  testOutput: (stdOutString: string) => boolean,
+  testOutputCallback: (stdOutString: string) => boolean,
   ...spawnArgs: Parameters<typeof spawn>
 ): Promise<boolean> =>
   new Promise<boolean>((resolve) => {
+    // ensure the promise is resolved only once
     let resolved = false;
     const resolveOnce = (result: boolean, debugStr?: string) => {
       if (!resolved) {
@@ -20,11 +53,14 @@ const shellTest = (
         resolve(result);
       }
     };
+    // spawn the child with the requested arguments
     const child = spawn(...spawnArgs);
+    // when data is received on stdout, call the testOutputCallback and resolve to true
+    // IFF the callback returns true.
     child.stdout.on("data", (data) => {
       const dataAsStr: string | undefined =
         typeof data === "string" ? data : data instanceof Buffer ? data.toString() : undefined;
-      if (dataAsStr != null && testOutput(dataAsStr)) {
+      if (dataAsStr != null && testOutputCallback(dataAsStr)) {
         resolveOnce(true, dataAsStr);
       }
     });
@@ -32,6 +68,11 @@ const shellTest = (
     child.on("exit", () => setTimeout(() => resolveOnce(false), 10));
   });
 
+/**
+ * On MacOS, we can test if the DiceKeys app is installed by using spotlight (mdfind)
+ * to search for an app with bundle identifier of com.dicekeys.app.
+ * @returns true iff the DiceKeys app is installed
+ */
 const isDiceKeysAppInstalledMac = () =>
   shellTest(
     (result) => result.indexOf("DiceKeys.app") != -1,
@@ -40,16 +81,27 @@ const isDiceKeysAppInstalledMac = () =>
     {}
   );
 
+/**
+ * On MacOS, we can test if the DiceKeys app is installed by using spotlight (mdfind)
+ * to search for an app with bundle identifier of com.dicekeys.app.
+ * @returns true iff the DiceKeys app is installed
+ */
 const isDiceKeysAppInstalledWindows = () =>
-  shellTest((result) => result.indexOf("FIXME") != -1, "reg", ["query", `"fixme"`], {});
+  shellTest(
+    (result) => result.indexOf("REG_SZ") != -1,
+    "reg",
+    ["query", "HKEY_CLASSES_ROOT\\dicekeys\\shell\\open\\command"],
+    {}
+  );
 
-export interface DiceKeysApiService {
-  getMasterPasswordDerivedFromDiceKey: () => Promise<GetMasterPasswordDerivedFromDiceKeyResponse>;
-  isDiceKeysAppInstalled: () => Promise<boolean>;
-}
-
+/** The custom protocol used for inter-application communication */
 const clientAppsProtocol = "bitwarden:";
+/** The recipe to use to generate passwords */
 const defaultRecipe = `{"allow":[{"host":"*.bitwarden.com"}]}`;
+/** The path used, such that responses come to bitwarden:/--derived-secret-api--/.
+ * This path is required so that responses from the DiceKeys API can't be used for XSS
+ * attacks.
+ */
 const defaultPathName = `/--derived-secret-api--/`;
 interface RequestParameters {
   requestId: string;
@@ -57,6 +109,13 @@ interface RequestParameters {
   recipe?: string;
   respondTo?: string;
 }
+
+/**
+ * encodes a DiceKeys API request given a command, recipe, requestId, and respondTo parameter
+ * @param param0 an object containing a requestID and optional for
+ * the `command` to send (default: `getPassword`), `recipe`, and `respondTo` path.
+ * @returns A URL string for issuing an API request to DiceKeys
+ */
 const encodeRequestParameters = (
   {
     requestId,
@@ -72,7 +131,14 @@ const encodeRequestParameters = (
     }, [] as string[])
     .join("&");
 
-class DiceKeysApiServiceImplementation implements DiceKeysApiService {
+/**
+ * This class implements a service in the main Electron process that
+ * tests if the DiceKeys app is present and, if so, uses that API
+ * to request DiceKey-generated master passwords.
+ */
+export const DiceKeysApiService = new (class DiceKeysApiServiceImplementation
+  implements DiceKeysApiServiceInterface
+{
   private requestIdToPromiseCallbacks = new Map<
     string,
     {
@@ -132,7 +198,11 @@ class DiceKeysApiServiceImplementation implements DiceKeysApiService {
     return true;
   };
 
-  isDiceKeysAppInstalled = (): Promise<boolean> =>
+  /**
+   * Test if the DiceKeys app is installed on this computer
+   * @returns true iff the DiceKeys app is installed.
+   */
+  checkIfDiceKeysAppInstalled = (): Promise<boolean> =>
     process.platform === "darwin"
       ? isDiceKeysAppInstalledMac()
       : process.platform === "win32"
@@ -140,6 +210,12 @@ class DiceKeysApiServiceImplementation implements DiceKeysApiService {
       : // Unknown OS.  Just return false.
         new Promise<boolean>((resolve) => resolve(false));
 
+  /**
+   * Sends a request to the DiceKeys app for a DiceKeys-generated master password and
+   * awaits the response.
+   * @returns A promise to an object with a password string field and two other fields that
+   * might help re-generate the password in the future.
+   */
   getMasterPasswordDerivedFromDiceKey = (): Promise<GetMasterPasswordDerivedFromDiceKeyResponse> =>
     new Promise<GetMasterPasswordDerivedFromDiceKeyResponse>((resolve, reject) => {
       // Generate 16-character hex random request id.
@@ -147,14 +223,11 @@ class DiceKeysApiServiceImplementation implements DiceKeysApiService {
         .map(() => Math.floor(Math.random() * 16).toString(16))
         .join("");
       try {
-        // const webRequestUrl = `https://dicekeys.app?${encodeRequestParameters({requestId})}`;
         const webRequestUrl = `https://dicekeys.app?${encodeRequestParameters({
           requestId,
         })}`;
-        // const webRequestUrl = `http://localhost:3000?${encodeRequestParameters({requestId})}`;
         const customSchemeRequestUrl = `dicekeys://?${encodeRequestParameters({ requestId })}`;
         this.requestIdToPromiseCallbacks.set(requestId, { resolve, reject });
-        // console.log(`requestUrl=${requestUrl}`);
 
         shell.openExternal(customSchemeRequestUrl).catch(() => {
           // If couldn't open the built-in app, open via the web
@@ -166,35 +239,32 @@ class DiceKeysApiServiceImplementation implements DiceKeysApiService {
       }
     });
 
-  constructor() {
-    ipcMain.handle(
-      "isDiceKeysAppInstalled",
-      async (
-        event,
-        responseChannel: string,
-        ...args: Parameters<typeof DiceKeyApiService.getMasterPasswordDerivedFromDiceKey>
-      ) => {
-        try {
-          return await this.isDiceKeysAppInstalled(...args);
-        } catch (e) {
-          return e;
-        }
-      }
+  /**
+   * This helper function ensures the implementation of the API matches that in the interface.
+   * @param fnName The name of the function to implement from the `DiceKeysApiServiceInterface`
+   * @param fnImplementation The implementation fo the function from the `DiceKeysApiServiceInterface`
+   * @returns void
+   */
+  private static addIpcMainHandler = <FN_NAME extends keyof DiceKeysApiServiceInterface>(
+    fnName: FN_NAME,
+    fnImplementation: DiceKeysApiServiceInterface[FN_NAME]
+  ) =>
+    ipcMain.handle(fnName, (_event, ...args) =>
+      fnImplementation(
+        ...(args as Parameters<DiceKeysApiServiceInterface[keyof DiceKeysApiServiceInterface]>)
+      )
     );
-    ipcMain.handle(
+
+  constructor() {
+    // Add handlers for the functions the main process provides to the
+    // processes running in windows.
+    DiceKeysApiServiceImplementation.addIpcMainHandler(
+      "checkIfDiceKeysAppInstalled",
+      this.checkIfDiceKeysAppInstalled
+    );
+    DiceKeysApiServiceImplementation.addIpcMainHandler(
       "getMasterPasswordDerivedFromDiceKey",
-      async (
-        event,
-        responseChannel: string,
-        ...args: Parameters<typeof DiceKeyApiService.getMasterPasswordDerivedFromDiceKey>
-      ) => {
-        try {
-          return await this.getMasterPasswordDerivedFromDiceKey(...args);
-        } catch (e) {
-          return e;
-        }
-      }
+      this.getMasterPasswordDerivedFromDiceKey
     );
   }
-}
-export const DiceKeyApiService = new DiceKeysApiServiceImplementation();
+})();

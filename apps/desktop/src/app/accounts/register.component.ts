@@ -15,10 +15,7 @@ import { PasswordGenerationService } from "@bitwarden/common/abstractions/passwo
 import { PlatformUtilsService } from "@bitwarden/common/abstractions/platformUtils.service";
 import { StateService } from "@bitwarden/common/abstractions/state.service";
 
-import {
-  invokeGetMasterPasswordDerivedFromDiceKey,
-  invokeIsDiceKeysAppInstalled,
-} from "./login.component";
+import { DiceKeysApiServiceClient } from "./login.component";
 
 const BroadcasterSubscriptionId = "RegisterComponent";
 
@@ -62,7 +59,7 @@ export class RegisterComponent extends BaseRegisterComponent implements OnInit, 
   async requestDiceKeyDerivedMasterPassword(): Promise<void> {
     try {
       const { password, centerLetterAndDigit, sequenceNumber } =
-        await invokeGetMasterPasswordDerivedFromDiceKey();
+        await DiceKeysApiServiceClient.getMasterPasswordDerivedFromDiceKey();
       const hintStrings: string[] = [
         ...(centerLetterAndDigit == null
           ? []
@@ -82,13 +79,13 @@ export class RegisterComponent extends BaseRegisterComponent implements OnInit, 
     }
   }
 
-  diceKeysAppIsInstalled = false;
-  checkIfDiceKeysInstalled = async () => {
-    this.diceKeysAppIsInstalled = await invokeIsDiceKeysAppInstalled();
+  diceKeysAppInstalled = false;
+  checkIfDiceKeysAppInstalled = async () => {
+    this.diceKeysAppInstalled = await DiceKeysApiServiceClient.checkIfDiceKeysAppInstalled();
   };
 
   async ngOnInit() {
-    this.checkIfDiceKeysInstalled();
+    this.checkIfDiceKeysAppInstalled();
     this.broadcasterService.subscribe(BroadcasterSubscriptionId, async (message: any) => {
       this.ngZone.run(() => {
         switch (message.command) {
@@ -96,7 +93,7 @@ export class RegisterComponent extends BaseRegisterComponent implements OnInit, 
             this.onWindowHidden();
             break;
           case "windowIsFocused":
-            this.checkIfDiceKeysInstalled();
+            this.checkIfDiceKeysAppInstalled();
             break;
           default:
         }
