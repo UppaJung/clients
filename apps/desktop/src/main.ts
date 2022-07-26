@@ -13,7 +13,6 @@ import { TrayMain } from "@bitwarden/electron/tray.main";
 import { UpdaterMain } from "@bitwarden/electron/updater.main";
 import { WindowMain } from "@bitwarden/electron/window.main";
 
-import { DiceKeysApiService } from "./electronDiceKeyApi.service";
 import { BiometricMain } from "./main/biometric/biometric.main";
 import { DesktopCredentialStorageListener } from "./main/desktopCredentialStorageListener";
 import { MenuMain } from "./main/menu/menu.main";
@@ -21,6 +20,7 @@ import { MessagingMain } from "./main/messaging.main";
 import { NativeMessagingMain } from "./main/nativeMessaging.main";
 import { PowerMonitorMain } from "./main/powerMonitor.main";
 import { Account } from "./models/account";
+import { DiceKeysApiService } from "./services/dicekey.service";
 import { I18nService } from "./services/i18n.service";
 
 export class Main {

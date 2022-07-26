@@ -63,7 +63,7 @@ export class LockComponent extends BaseLockComponent implements OnDestroy {
     this.diceKeysAppInstalled = await DiceKeysApiServiceClient.checkIfDiceKeysAppInstalled();
   };
 
-  async requestDiceKeyDerivedMasterPassword(): Promise<void> {
+  async fetchDiceKeyDerivedMasterPasswordAndUpdate(): Promise<void> {
     try {
       const { password } = await DiceKeysApiServiceClient.getMasterPasswordDerivedFromDiceKey();
       this.masterPassword = password;

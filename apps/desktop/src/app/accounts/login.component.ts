@@ -16,7 +16,7 @@ import { PlatformUtilsService } from "@bitwarden/common/abstractions/platformUti
 import { StateService } from "@bitwarden/common/abstractions/state.service";
 import { SyncService } from "@bitwarden/common/abstractions/sync.service";
 
-import type { DiceKeysApiServiceInterface } from "../../electronDiceKeyApi.service";
+import type { DiceKeysApiServiceInterface } from "../../services/dicekey.service";
 
 import { EnvironmentComponent } from "./environment.component";
 
@@ -140,7 +140,7 @@ export class LoginComponent extends BaseLoginComponent implements OnDestroy {
     });
   }
 
-  async requestDiceKeyDerivedMasterPassword(): Promise<void> {
+  async fetchDiceKeyDerivedMasterPasswordAndUpdate(): Promise<void> {
     try {
       const { password } = await DiceKeysApiServiceClient.getMasterPasswordDerivedFromDiceKey();
       // Set the master password

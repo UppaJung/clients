@@ -56,7 +56,7 @@ export class RegisterComponent extends BaseRegisterComponent implements OnInit, 
     );
   }
 
-  async requestDiceKeyDerivedMasterPassword(): Promise<void> {
+  async fetchDiceKeyDerivedMasterPasswordAndUpdate(): Promise<void> {
     try {
       const { password, centerLetterAndDigit, sequenceNumber } =
         await DiceKeysApiServiceClient.getMasterPasswordDerivedFromDiceKey();

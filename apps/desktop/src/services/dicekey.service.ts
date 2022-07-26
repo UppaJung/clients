@@ -223,14 +223,14 @@ export const DiceKeysApiService = new (class DiceKeysApiServiceImplementation
         .map(() => Math.floor(Math.random() * 16).toString(16))
         .join("");
       try {
-        const webRequestUrl = `https://dicekeys.app?${encodeRequestParameters({
-          requestId,
-        })}`;
-        const customSchemeRequestUrl = `dicekeys://?${encodeRequestParameters({ requestId })}`;
         this.requestIdToPromiseCallbacks.set(requestId, { resolve, reject });
 
+        const customSchemeRequestUrl = `dicekeys://?${encodeRequestParameters({ requestId })}`;
         shell.openExternal(customSchemeRequestUrl).catch(() => {
           // If couldn't open the built-in app, open via the web
+          const webRequestUrl = `https://dicekeys.app?${encodeRequestParameters({
+            requestId,
+          })}`;
           shell.openExternal(webRequestUrl);
         });
       } catch (e) {
