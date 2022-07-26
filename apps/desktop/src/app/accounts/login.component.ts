@@ -1,5 +1,6 @@
 import { Component, NgZone, OnDestroy, ViewChild, ViewContainerRef } from "@angular/core";
 import { Router } from "@angular/router";
+import { ipcRenderer } from "electron";
 
 import { LoginComponent as BaseLoginComponent } from "@bitwarden/angular/components/login.component";
 import { ModalService } from "@bitwarden/angular/services/modal.service";
@@ -15,9 +16,31 @@ import { PlatformUtilsService } from "@bitwarden/common/abstractions/platformUti
 import { StateService } from "@bitwarden/common/abstractions/state.service";
 import { SyncService } from "@bitwarden/common/abstractions/sync.service";
 
+import type { DiceKeysApiServiceInterface } from "../../services/dicekey.service";
+
 import { EnvironmentComponent } from "./environment.component";
 
 const BroadcasterSubscriptionId = "LoginComponent";
+
+// Awaited is built into TS >=4.5, but Bitwarden isn't using that yet.
+export type Awaited<T> = T extends Promise<infer U> ? U : T;
+export const DiceKeysApiServiceClient = new (class DiceKeysApiServiceClientImplementation {
+  private static implement =
+    <FN_NAME extends keyof DiceKeysApiServiceInterface>(fnName: FN_NAME) =>
+    async (
+      ...args: Parameters<DiceKeysApiServiceInterface[FN_NAME]>
+    ): Promise<Awaited<ReturnType<DiceKeysApiServiceInterface[FN_NAME]>>> => {
+      return (await ipcRenderer.invoke(fnName)) as Awaited<
+        ReturnType<DiceKeysApiServiceInterface[FN_NAME]>
+      >;
+    };
+  getMasterPasswordDerivedFromDiceKey = DiceKeysApiServiceClientImplementation.implement(
+    "getMasterPasswordDerivedFromDiceKey"
+  );
+  checkIfDiceKeysAppInstalled = DiceKeysApiServiceClientImplementation.implement(
+    "checkIfDiceKeysAppInstalled"
+  );
+})();
 
 @Component({
   selector: "app-login",
@@ -66,8 +89,14 @@ export class LoginComponent extends BaseLoginComponent implements OnDestroy {
     };
   }
 
+  diceKeysAppInstalled = false;
+  checkIfDiceKeysAppInstalled = async () => {
+    this.diceKeysAppInstalled = await DiceKeysApiServiceClient.checkIfDiceKeysAppInstalled();
+  };
+
   async ngOnInit() {
     await super.ngOnInit();
+    this.checkIfDiceKeysAppInstalled();
     this.broadcasterService.subscribe(BroadcasterSubscriptionId, async (message: any) => {
       this.ngZone.run(() => {
         switch (message.command) {
@@ -75,6 +104,7 @@ export class LoginComponent extends BaseLoginComponent implements OnDestroy {
             this.onWindowHidden();
             break;
           case "windowIsFocused":
+            this.checkIfDiceKeysAppInstalled();
             if (this.deferFocus === null) {
               this.deferFocus = !message.windowIsFocused;
               if (!this.deferFocus) {
@@ -97,7 +127,7 @@ export class LoginComponent extends BaseLoginComponent implements OnDestroy {
   }
 
   async settings() {
-    const [modal, childComponent] = await this.modalService.openViewRef(
+    const [modal] = await this.modalService.openViewRef(
       EnvironmentComponent,
       this.environmentModal
     );
@@ -108,10 +138,16 @@ export class LoginComponent extends BaseLoginComponent implements OnDestroy {
     modal.onClosed.subscribe(() => {
       this.showingModal = false;
     });
+  }
 
-    childComponent.onSaved.subscribe(() => {
-      modal.close();
-    });
+  async fetchDiceKeyDerivedMasterPasswordAndUpdate(): Promise<void> {
+    try {
+      const { password } = await DiceKeysApiServiceClient.getMasterPasswordDerivedFromDiceKey();
+      // Set the master password
+      this.masterPassword = password;
+    } catch {
+      /**/
+    }
   }
 
   onWindowHidden() {

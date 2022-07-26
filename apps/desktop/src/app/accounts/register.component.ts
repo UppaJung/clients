@@ -15,6 +15,8 @@ import { PasswordGenerationService } from "@bitwarden/common/abstractions/passwo
 import { PlatformUtilsService } from "@bitwarden/common/abstractions/platformUtils.service";
 import { StateService } from "@bitwarden/common/abstractions/state.service";
 
+import { DiceKeysApiServiceClient } from "./login.component";
+
 const BroadcasterSubscriptionId = "RegisterComponent";
 
 @Component({
@@ -54,12 +56,44 @@ export class RegisterComponent extends BaseRegisterComponent implements OnInit, 
     );
   }
 
+  async fetchDiceKeyDerivedMasterPasswordAndUpdate(): Promise<void> {
+    try {
+      const { password, centerLetterAndDigit, sequenceNumber } =
+        await DiceKeysApiServiceClient.getMasterPasswordDerivedFromDiceKey();
+      const hintStrings: string[] = [
+        ...(centerLetterAndDigit == null
+          ? []
+          : [`the DiceKey with ${centerLetterAndDigit} in center`]),
+        ...(sequenceNumber == null ? [] : [`sequence # ${sequenceNumber}`]),
+      ];
+      const hint: { hint: string } | Record<string, never> =
+        hintStrings.length === 0 ? {} : { hint: `Use ${hintStrings.join(" and ")}.` };
+      const formValuesToUpdate = {
+        masterPassword: password,
+        confirmMasterPassword: password,
+        ...hint,
+      };
+      this.formGroup.patchValue(formValuesToUpdate);
+    } catch {
+      // Error notification here if appropriate
+    }
+  }
+
+  diceKeysAppInstalled = false;
+  checkIfDiceKeysAppInstalled = async () => {
+    this.diceKeysAppInstalled = await DiceKeysApiServiceClient.checkIfDiceKeysAppInstalled();
+  };
+
   async ngOnInit() {
+    this.checkIfDiceKeysAppInstalled();
     this.broadcasterService.subscribe(BroadcasterSubscriptionId, async (message: any) => {
       this.ngZone.run(() => {
         switch (message.command) {
           case "windowHidden":
             this.onWindowHidden();
+            break;
+          case "windowIsFocused":
+            this.checkIfDiceKeysAppInstalled();
             break;
           default:
         }

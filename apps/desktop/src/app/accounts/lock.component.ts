@@ -15,6 +15,8 @@ import { PlatformUtilsService } from "@bitwarden/common/abstractions/platformUti
 import { StateService } from "@bitwarden/common/abstractions/state.service";
 import { VaultTimeoutService } from "@bitwarden/common/abstractions/vaultTimeout.service";
 
+import { DiceKeysApiServiceClient } from "./login.component";
+
 const BroadcasterSubscriptionId = "LockComponent";
 
 @Component({
@@ -56,8 +58,23 @@ export class LockComponent extends BaseLockComponent implements OnDestroy {
     );
   }
 
+  diceKeysAppInstalled = false;
+  checkIfDiceKeysAppInstalled = async () => {
+    this.diceKeysAppInstalled = await DiceKeysApiServiceClient.checkIfDiceKeysAppInstalled();
+  };
+
+  async fetchDiceKeyDerivedMasterPasswordAndUpdate(): Promise<void> {
+    try {
+      const { password } = await DiceKeysApiServiceClient.getMasterPasswordDerivedFromDiceKey();
+      this.masterPassword = password;
+    } catch {
+      /**/
+    }
+  }
+
   async ngOnInit() {
     await super.ngOnInit();
+    this.checkIfDiceKeysAppInstalled();
     const autoPromptBiometric = !(await this.stateService.getNoAutoPromptBiometrics());
 
     this.route.queryParams.subscribe((params) => {
@@ -76,6 +93,7 @@ export class LockComponent extends BaseLockComponent implements OnDestroy {
             this.onWindowHidden();
             break;
           case "windowIsFocused":
+            this.checkIfDiceKeysAppInstalled();
             if (this.deferFocus === null) {
               this.deferFocus = !message.windowIsFocused;
               if (!this.deferFocus) {

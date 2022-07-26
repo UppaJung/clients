@@ -20,6 +20,7 @@ import { MessagingMain } from "./main/messaging.main";
 import { NativeMessagingMain } from "./main/nativeMessaging.main";
 import { PowerMonitorMain } from "./main/powerMonitor.main";
 import { Account } from "./models/account";
+import { DiceKeysApiService } from "./services/dicekey.service";
 import { I18nService } from "./services/i18n.service";
 
 export class Main {
@@ -177,7 +178,7 @@ export class Main {
 
         app.removeAsDefaultProtocolClient("bitwarden");
         if (process.env.NODE_ENV === "development" && process.platform === "win32") {
-          // Fix development build on Windows requirering a different protocol client
+          // Fix development build on Windows requiring a different protocol client
           app.setAsDefaultProtocolClient("bitwarden", process.execPath, [
             process.argv[1],
             path.resolve(process.argv[2]),
@@ -209,9 +210,14 @@ export class Main {
 
   private processDeepLink(argv: string[]): void {
     argv
-      .filter((s) => s.indexOf("bitwarden://") === 0)
+      .filter((s) => s.indexOf("bitwarden:/") === 0)
       .forEach((s) => {
         const url = new URL(s);
+        if (DiceKeysApiService.handlePotentialApiResponseUrl(url)) {
+          // The URL was for the DiceKey API service and does not need
+          // further processing.
+          return;
+        }
         const code = url.searchParams.get("code");
         const receivedState = url.searchParams.get("state");
         if (code != null && receivedState != null) {
